@@ -42,12 +42,14 @@ The code below will produce a merged Config with merged values:
 ```python
 from ilexconf import Config, from_json
 
+# Create configuration using JSON file, dictionary and key-value pair
 config = Config(
     from_json("settings.json"),
     { "database": { "connection": { "host": "test.local" } } },
     database__connection__port=4000
 )
 
+# Check it was created and values are merged properly
 assert config.as_dict() == {
     "database": {
         "connection": {
@@ -60,7 +62,7 @@ assert config.as_dict() == {
 
 ### Access values however you like
 
-You can access any key in the hierarchical structure using classical Python dict notation, dotted keys, or attributes.
+You can access any key in the hierarchical structure using classical Python dict notation, dotted keys, attributes, or any combination of this methods.
 
 ```python
 # Classic way
@@ -83,7 +85,7 @@ assert config.database.connection["host"] == "test.local"
 
 Similarly, you can set values of any key (_even if the don't exist in the Config_) using all of the ways above.
 
-**Notice** _that, contrary to what you would traditionally expect from the Python dictionaries, setting nested keys that do not exist is **allowed**_.
+**Notice**, _contrary to what you would expect from the Python dictionaries, setting nested keys that do not exist is **allowed**_.
 
 ```python
 # Classic way
@@ -94,7 +96,7 @@ assert config["database"]["connection"]["port"] == 8080
 config["database.connection.user"] = "root"
 assert config["database.connection.user"] == "root"
 
-# Attributes
+# Attributes (also does not exist yet)
 config.database.connection.password = "secret stuff"
 assert config.database.connection.password == "secret stuff"
 ```
@@ -129,10 +131,11 @@ assert config.as_dict() == {
 
 ### Save to file
 
-You can serialize the file as json any time using the `save` method.
+You can serialize the file as json any time using the `write` method.
 
 ```python
-
+# Write updated config back as JSON file
+config.write("settings.json")
 ```
 
 **WARNING**: _This might throw a serialization error if any of the values contained in the Config are custom objects that cannot be converted to `str`. Also, obviously, you might not be able to correctly parse an object back, if it's saved to JSON as `MyObject(<function MyObject.__init__.<locals>.<lambda> at 0x108927af0>, {})` or something._
