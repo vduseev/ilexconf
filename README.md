@@ -124,7 +124,7 @@ assert config.database.connection.password == "secret stuff"
 
 If you just assign a value to any key, you override any previous value of that key.
 
-In order to merge assigned value with the existing one, use `merge` method.
+In order to merge assigned value with an existing one, use `merge` method.
 
 ```python
 config.database.connection.merge({ "password": "different secret" })
