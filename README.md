@@ -10,15 +10,31 @@
 <a href="https://github.com/psf/black"><img alt="Code style: black" src="https://img.shields.io/badge/code%20style-black-000000.svg"></a>
 </p>
 
+## Table of contents 
+
+* <a href="#quick_start">Quick Start</a>
+  * <a href="#quick_start_install">Installation</a>
+  * <a href="#quick_start_create">Create `Config` object</a>
+  * <a href="#quick_start_access">Access values</a>
+  * <a href="#quick_start_change_create">Change & create values</a>
+  * <a href="#quick_start_merge">`merge` another `Mapping` into config</a>
+  * <a href="#quick_start_as_dict">Convert to simple `dict` using `as_dict`</a>
+  * <a href="#quick_start_write">Save to file using `write`</a>
+  * <a href="#quick_start_subclass">Subclass `Config` to customize</a>
+* <a href="#internals">⚙️ Internals – How it Works</a>
+
+<a id="quick_start"></a>
 ## Quick Start
 
+<a id="quick_start_install"></a>
 ### Install
 
 ```shell
 $ pip install ilexconf
 ```
 
-### Populate ilexconf with values
+<a id="quick_start_create"></a>
+### Populate Config with values
 
 Config object is initialized using arbitrary number of Mapping objects and keyword arguments. It can even be empty. 
 
@@ -60,6 +76,7 @@ assert config.as_dict() == {
 }
 ```
 
+<a id="quick_start_access"></a>
 ### Access values however you like
 
 You can access any key in the hierarchical structure using classical Python dict notation, dotted keys, attributes, or any combination of this methods.
@@ -81,6 +98,7 @@ assert config.database["connection"].host == "test.local"
 assert config.database.connection["host"] == "test.local"
 ```
 
+<a id="quick_start_change_create"></a>
 ### Change existing values and create new ones
 
 Similarly, you can set values of any key (_even if the don't exist in the Config_) using all of the ways above.
@@ -101,6 +119,7 @@ config.database.connection.password = "secret stuff"
 assert config.database.connection.password == "secret stuff"
 ```
 
+<a id="quick_start_merge"></a>
 ### Update with another Mapping object
 
 If you just assign a value to any key, you override any previous value of that key.
@@ -112,6 +131,7 @@ config.database.connection.merge({ "password": "different secret" })
 assert config.database.connection.password == "different secret"
 ```
 
+<a id="quick_start_as_dict"></a>
 ### Represent as dictionary
 
 For any purposes you might find fit you can convert entire structure of the Config object into dictionary, which will be returned to you as essentially a deep copy of the object.
@@ -129,7 +149,8 @@ assert config.as_dict() == {
 }
 ```
 
-### Save to file
+<a id="quick_start_write"></a>
+### Write to file
 
 You can serialize the file as json any time using the `write` method.
 
@@ -140,6 +161,7 @@ config.write("settings.json")
 
 **WARNING**: _This might throw a serialization error if any of the values contained in the Config are custom objects that cannot be converted to `str`. Also, obviously, you might not be able to correctly parse an object back, if it's saved to JSON as `MyObject(<function MyObject.__init__.<locals>.<lambda> at 0x108927af0>, {})` or something._
 
+<a id="quick_start_subclass"></a>
 ### Subclass
 
 Subclassing `Config` class is very convenient for implementation of your own config classes with custom logic.
@@ -172,11 +194,13 @@ assert config.my.custom.key == "Yes, do stuff"
 assert config.Horizon == "Up"
 ```
 
+<a id="internals"></a>
 ## Internals
 
 Under the hood `ilexconf` is implemented as a `defaultdict` where every key with Mapping value is represented as another `Config` object. This creates a hierarchy of `Config` objects.
 
-## Alternatives
+<a id="alternatives"></a>
+## Alternative Libraries
 
 Below is a primitive analysis of features of alternative libraries doing similar job.
 
