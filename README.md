@@ -152,7 +152,7 @@ assert config.as_dict() == {
 <a id="quick_start_write"></a>
 ### Write to file
 
-You can serialize the file as json any time using the `write` method.
+You can serialize the file as JSON any time using the `write` method.
 
 ```python
 # Write updated config back as JSON file
