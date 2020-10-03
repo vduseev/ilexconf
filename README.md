@@ -10,16 +10,19 @@
 <a href="https://github.com/psf/black"><img alt="Code style: black" src="https://img.shields.io/badge/code%20style-black-000000.svg"></a>
 </p>
 
+`ilexconf` is a Python library to load and merge configs from multiple sources, access & change the values, and write them back, if needed. It has no dependencies by default but provides additional functions, relying on popular libraries to parse `yaml`, `toml`, provide `CLI` app, etc.
+
 ## Table of contents 
 
 * <a href="#quick_start">🚀 Quick Start</a>
   * <a href="#quick_start_install">Installation</a>
   * <a href="#quick_start_create">Create `Config` object</a>
+  * <a href="#quick_start_read">Read using `from_` functions</a>
   * <a href="#quick_start_access">Access values</a>
   * <a href="#quick_start_change_create">Change & create values</a>
   * <a href="#quick_start_merge">`merge` another `Mapping` into config</a>
   * <a href="#quick_start_as_dict">Convert to simple `dict` using `as_dict`</a>
-  * <a href="#quick_start_write">Save to file using `write`</a>
+  * <a href="#quick_start_write">Save to file using `to_` functions</a>
   * <a href="#quick_start_subclass">Subclass `Config` to customize</a>
 * <a href="#internals">⚙️ Internals – How it Works</a>
 
@@ -74,6 +77,33 @@ assert config.as_dict() == {
         }
     }
 }
+```
+
+<a id="quick_start_read"></a>
+### Read from files & environment variables
+
+Files like `.json`, `.yaml`, `.toml`, `.ini`, `.env`, `.py` as well as environment variables can all be read & loaded using a set of `from_` functions.
+
+```python
+from ilexconf import (
+    from_json,
+    from_yaml,
+    from_toml,
+    from_ini,
+    from_python,
+    from_dotenv,
+    from_env
+)
+
+config = Config(
+    from_json("settings.json"),
+    from_yaml("settings.yaml"),
+    from_toml("settings.toml"),
+    from_ini("settings.ini"),
+    from_python("settings.py"),
+    from_dotenv(".env"),
+    from_env()
+)
 ```
 
 <a id="quick_start_access"></a>
@@ -152,11 +182,13 @@ assert config.as_dict() == {
 <a id="quick_start_write"></a>
 ### Write to file
 
-You can serialize the file as JSON any time using the `write` method.
+You can serialize the file as JSON or other types any time using the `to_` functions.
 
 ```python
 # Write updated config back as JSON file
-config.write("settings.json")
+from ilexconf import to_json
+
+to_json(config, "settings.json")
 ```
 
 **WARNING**: _This might throw a serialization error if any of the values contained in the Config are custom objects that cannot be converted to `str`. Also, obviously, you might not be able to correctly parse an object back, if it's saved to JSON as `MyObject(<function MyObject.__init__.<locals>.<lambda> at 0x108927af0>, {})` or something._
