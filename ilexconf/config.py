@@ -18,13 +18,13 @@ class Config(defaultdict):
         foo = Config()
         bar = Config({ "a": { "b" : 2 }}, foo)
         ```
-    
+
     Config is intented to be initialized by the settings read from files,
     command line arguments, environment variables, default variables, etc.
 
     After Config is created you can perform all usual dictionary operations
     on it. However, you can also:
-    
+
         - Serialize it, dump it to json, and write to file
 
             ```
@@ -41,13 +41,13 @@ class Config(defaultdict):
           (see `flatten` method).
 
         - Read and write any key using any of the following methods:
-            
+
             As in Python dictionary:
               `config["my"]["key"]`
-            
+
             As if it was flat dictionary:
               `config["my.key"]`
-            
+
             As if it was object with attributes:
               `config.my.key`
 
@@ -76,11 +76,11 @@ class Config(defaultdict):
             for key in m.keys():
                 if isinstance(m[key], Mapping):
                     if key in self:
-                        self.update({ key: Config(self[key], m[key]) })
+                        self.update({key: Config(self[key], m[key])})
                     else:
-                        self.update({ key: Config(m[key]) })
+                        self.update({key: Config(m[key])})
                 else:
-                    self.update({ key: m[key] })
+                    self.update({key: m[key]})
 
     def __getitem__(self, item):
         if isinstance(item, str) and "." in item:
