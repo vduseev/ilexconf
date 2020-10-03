@@ -67,6 +67,8 @@ def test_setitem():
     assert empty_cfg["f1"] is False
     empty_cfg["f2"]["g3"]["h3"] = 123
     assert empty_cfg["f2.g3.h3"] == 123
+    empty_cfg["u1.u4.u6"] = True
+    assert empty_cfg["u1"]["u4"]["u6"] is True
 
 
 def test_setattr():
