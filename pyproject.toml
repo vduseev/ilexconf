@@ -1,6 +1,6 @@
 [tool.poetry]
 name = "ilexconf"
-version = "0.6.1"
+version = "0.6.3"
 description = "Configuration library for Python 🔧 Load from multiple sources"
 authors = ["vduseev <vagiz@duseev.com>"]
 license = "MIT"
