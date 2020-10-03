@@ -1,8 +1,18 @@
-# Holly Settings
+![ilexconf](docs/img/logo.png)
 
-## Project goal
+<h2 align="center">Configuration Library for Python</h2>
 
-Holly Settings heavily borrows from `python-configuration` library and is inspired by it.
+<p align="center">
+<a href="https://travis-ci.com/psf/black"><img alt="Build Status" src="https://travis-ci.com/psf/black.svg?branch=master"></a>
+<a href="https://coveralls.io/github/psf/black?branch=master"><img alt="Coverage Status" src="https://coveralls.io/repos/github/psf/black/badge.svg?branch=master"></a>
+<a href="https://github.com/psf/black/blob/master/LICENSE"><img alt="License: MIT" src="https://black.readthedocs.io/en/stable/_static/license.svg"></a>
+<a href="https://pypi.org/project/black/"><img alt="PyPI" src="https://img.shields.io/pypi/v/black"></a>
+<a href="https://github.com/psf/black"><img alt="Code style: black" src="https://img.shields.io/badge/code%20style-black-000000.svg"></a>
+</p>
+
+## Features
+
+## Quick Start
 
 ## Alternatives
 
@@ -34,3 +44,11 @@ Holly Settings heavily borrows from `python-configuration` library and is inspir
 | *Python 3.6*                      |       |          |
 | *Python 3.7*                      |       |          |
 | *Python 3.8*                      | x     |          |
+
+## Kudos
+
+`ilexconf` heavily borrows from `python-configuration` library and is inspired by it.
+
+## License
+
+MIT

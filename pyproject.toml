@@ -1,13 +1,13 @@
 [tool.poetry]
-name = "holly-settings"
+name = "ilexconf"
 version = "0.6.1"
-description = "Library to load configuration from multiple sources"
+description = "Configuration library for Python 🔧 Load from multiple sources"
 authors = ["vduseev <vagiz@duseev.com>"]
 license = "MIT"
 keywords = ["configuration", "settings", "json", "yaml", "ini"]
 readme = "README.md"
-homepage = "https://github.com/vduseev/holly-settings"
-repository = "https://github.com/vduseev/holly-settings"
+homepage = "https://github.com/vduseev/ilexconf"
+repository = "https://github.com/vduseev/ilexconf"
 
 [tool.poetry.dependencies]
 python = "^3.8"
