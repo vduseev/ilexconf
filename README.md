@@ -12,7 +12,7 @@
 
 ## Table of contents 
 
-* <a href="#quick_start">Quick Start</a>
+* <a href="#quick_start">🚀 Quick Start</a>
   * <a href="#quick_start_install">Installation</a>
   * <a href="#quick_start_create">Create `Config` object</a>
   * <a href="#quick_start_access">Access values</a>
