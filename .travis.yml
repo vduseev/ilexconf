@@ -15,5 +15,4 @@ script:
 - poetry run pytest
 
 after_success:
-- poetry build
-- poetry publish
+- poetry publish --build --username "$PYPI_USERNAME" --password "$PYPI_PASSWORD"

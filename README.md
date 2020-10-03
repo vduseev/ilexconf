@@ -1,4 +1,4 @@
-![ilexconf](docs/img/logo.png)
+![ilexconf](https://raw.githubusercontent.com/vduseev/ilexconf/master/docs/img/logo.png)
 
 <h2 align="center">Configuration Library for Python</h2>
 
