@@ -101,7 +101,7 @@ assert config.database.connection["host"] == "test.local"
 <a id="quick_start_change_create"></a>
 ### Change existing values and create new ones
 
-Similarly, you can set values of any key (_even if the don't exist in the Config_) using all of the ways above.
+Similarly, you can set values of any key (_even if it doesn't exist in the Config_) using all of the ways above.
 
 **Notice**, _contrary to what you would expect from the Python dictionaries, setting nested keys that do not exist is **allowed**_.
 
