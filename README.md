@@ -134,7 +134,7 @@ assert config.database.connection.password == "different secret"
 <a id="quick_start_as_dict"></a>
 ### Represent as dictionary
 
-For any purposes you might find fit you can convert entire structure of the Config object into dictionary, which will be returned to you as essentially a deep copy of the object.
+For any purposes you might find fit you can convert entire structure of the Config object into dictionary, which will be essentially returned to you as a deep copy of the object.
 
 ```python
 assert config.as_dict() == {
