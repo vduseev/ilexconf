@@ -199,6 +199,8 @@ assert config.Horizon == "Up"
 
 Under the hood `ilexconf` is implemented as a `defaultdict` where every key with Mapping value is represented as another `Config` object. This creates a hierarchy of `Config` objects.
 
+`__getitem__`, `__setitem__`, `__getattr__`, and `__setattr__` methods are overloaded with custom logic to support convenient get/set approach presented by the library.
+
 <a id="alternatives"></a>
 ## Alternative Libraries
 
