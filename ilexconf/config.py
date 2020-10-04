@@ -1,66 +1,32 @@
 from collections import defaultdict
+
+from ilexconf.helpers import keyval_to_dict
+
 from typing import (
     Any,
     Dict,
     Mapping,
+    List,
 )
+
+# TODO: Mapping objects in lists also should be Configs
+# TODO: Implement from_json, from_env, etc.
+# TODO: update existing Config using merge
+# TODO: merging mappings with dotted keys
+# TODO: Implement copy method
+# TODO: Implement flatten method to convert Config to python-configuration instance
+# TODO: Super weird error when item did not exist and we created it
 
 
 class Config(defaultdict):
     """
     Config is a dictionary of other configs forming hierarchical structure.
-
-    The Config takes any number of mappings as an input and merges them.
-    It can be initialized as an empty dictionary as well.
-
-        ```
-        from hollysettings import Config
-        foo = Config()
-        bar = Config({ "a": { "b" : 2 }}, foo)
-        ```
-
-    Config is intented to be initialized by the settings read from files,
-    command line arguments, environment variables, default variables, etc.
-
-    After Config is created you can perform all usual dictionary operations
-    on it. However, you can also:
-
-        - Serialize it, dump it to json, and write to file
-
-            ```
-            from hollysettings import Config, to_json
-            cfg = Config({"a": 1})
-            to_json(cfg, "settings.json")
-            ```
-
-        - Convert it to standard Python dict object
-          (see `as_dict` method).
-
-        - Flatten it, i.e. transform hierarchical nature of config to flat
-          one-level dictionary with dottet keys like "my.key"
-          (see `flatten` method).
-
-        - Read and write any key using any of the following methods:
-
-            As in Python dictionary:
-              `config["my"]["key"]`
-
-            As if it was flat dictionary:
-              `config["my.key"]`
-
-            As if it was object with attributes:
-              `config.my.key`
-
-        - Covert it to hierarchical table and print it
-          (see `as_table` method).
-
-        - Make deep copy of it
-          (see `copy` method).
     """
 
     def __init__(
         self,
-        *mappings: Mapping[str, Any],
+        *mappings: Mapping[Any, Any],
+        **kwargs: Dict
     ):
         """
         Constructor.
@@ -71,16 +37,13 @@ class Config(defaultdict):
         # KeyError exection.
         super().__init__(*(lambda: Config(),))
 
-        # Merge values of mappings
-        for m in mappings:
-            for key in m.keys():
-                if isinstance(m[key], Mapping):
-                    if key in self:
-                        self.update({key: Config(self[key], m[key])})
-                    else:
-                        self.update({key: Config(m[key])})
-                else:
-                    self.update({key: m[key]})
+        # Merge in values of mappings
+        self.merge(*mappings)
+
+        # Merge in values of keyword arguments
+        for k, v in kwargs.items():
+            parsed = keyval_to_dict(k, v)
+            self.merge(parsed)
 
     def __getitem__(self, item):
         if isinstance(item, str) and "." in item:
@@ -111,5 +74,74 @@ class Config(defaultdict):
                 d[key] = self[key]
         return d
 
-    def as_table(self):
-        pass
+    def merge(self, *mappings: Mapping[Any, Any]) -> None:
+        """
+        Merge values of mappings with current config recursively.
+        """
+
+        for m in mappings:
+            for key in m.keys():
+                if isinstance(m[key], Mapping):
+                    if key in self:
+                        self.update({key: Config(self[key], m[key])})
+                    else:
+                        self.update({key: Config(m[key])})
+                else:
+                    self.update({key: m[key]})
+
+    def as_table(
+        self,
+        headers: List[str] = ["Setting", "Value"],
+        indentation: str = "  ",
+        limit: int = 0,
+    ):
+        """
+        Transform multilevel dictionary into table structure suitable for printing by Cleo library.
+        """
+
+        def processor(c: Dict, rows: Rows, level: int):
+            # Increment level so that all child rows are indented
+            level += 1
+            for k in sorted(c.keys()):
+                key = k
+                table_key = f"{indentation * level}{key}"
+
+                # Try to interpret the field as a dictionary
+                try:
+                    # Can't do isinstance(c, collections.Mapping) because
+                    # config that needs this method is not a Mapping subclass
+                    is_dict = hasattr(c[k], "keys")
+                except KeyError:
+                    is_dict = False
+
+                if is_dict:
+                    # Add category row
+                    rows.append([table_key, ""])
+                    # Recursive call
+                    processor(c[k], rows, level)
+
+                else:
+                    # Transform multiline strings into singleline
+                    singleline = " ".join(
+                        str(c[k]).replace("\n", " ").replace("\t", " ").split()
+                    )
+
+                    # Clip long string by character limit to fit onto the screen
+                    clipped = (
+                        singleline if len(singleline) < 80 else f"{singleline[:76]} ..."
+                    )
+                    rows.append([table_key, clipped])
+
+                if limit > 0 and len(rows) > limit:
+                    break
+
+        # Populate rows
+        rows = []
+        processor(self, rows, -1)
+        if len(rows) > limit:
+            rows.append(["...", "..."])
+
+        return (headers, rows)
+
+    def __repr__(self):
+        return str(self.as_dict())
