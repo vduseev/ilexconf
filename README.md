@@ -41,7 +41,28 @@ $ pip install ilexconf
 
 Config object is initialized using arbitrary number of Mapping objects and keyword arguments. It can even be empty. 
 
-When we initialize config all the values are merged. Last Mapping is merged on top of the previous mapping values. And keyword arguments override even that.
+```python
+from ilexconf import Config, from_json
+
+# All of these are valid methods to initialize a config
+config = Config()
+config = Config({ "database": { "connection": { "host": "test.local" } } })
+config = Config(database__connection__port=4000)
+config = from_json("settings.json")
+config = from_env()
+
+# Or, you can combine them
+config = Config(
+    # Take the basic settings from JSON file
+    from_json("settings.json"),
+    # Merge them with a dictionary
+    { "database": { "connection": { "host": "test.local" } } },
+    # Merge the keyword arguments on top
+    database__connection__port=4000
+)
+```
+
+When we initialize config all the values are merged. Every next argument is merged on top of the previous mapping values. And keyword arguments override even that.
 
 For a settings file `settings.json` with the following content ...
 
@@ -56,20 +77,10 @@ For a settings file `settings.json` with the following content ...
 }
 ```
 
-The code below will produce a merged Config with merged values:
+The code above will produce a merged `config` with merged values:
 
-```python
-from ilexconf import Config, from_json
-
-# Create configuration using JSON file, dictionary and key-value pair
-config = Config(
-    from_json("settings.json"),
-    { "database": { "connection": { "host": "test.local" } } },
-    database__connection__port=4000
-)
-
-# Check it was created and values are merged properly
-assert config.as_dict() == {
+```json
+{
     "database": {
         "connection": {
             "host": "test.local",
@@ -86,19 +97,23 @@ Files like `.json`, `.yaml`, `.toml`, `.ini`, `.env`, `.py` as well as environme
 
 ```python
 from ilexconf import (
-    from_json,
-    from_yaml,
-    from_toml,
-    from_ini,
-    from_python,
-    from_dotenv,
-    from_env
+    from_json,      # from JSON file or string
+    from_yaml,      # from YAML file or string
+    from_toml,      # from TOML file or string
+    from_ini,       # from INI file or string
+    from_python,    # from .py module
+    from_dotenv,    # from .env file
+    from_env        # from environment variables
 )
 
-config = Config(
-    from_json("settings.json"),
+cfg1 = from_json("settings.json")
+
+cfg2 = Config(
     from_yaml("settings.yaml"),
-    from_toml("settings.toml"),
+    from_toml("settings.toml")
+)
+
+cfg3 = Config(
     from_ini("settings.ini"),
     from_python("settings.py"),
     from_dotenv(".env"),
@@ -208,7 +223,7 @@ class Config(ilexconf.Config):
     Your custom Configuration class
     """
 
-    def __init__(do_stuff=False):
+    def __init__(self, do_stuff=False):
         # Initialize your custom config with JSON by default
         super().__init__(self, ilexconf.from_json("setting.json"))
 
@@ -245,7 +260,7 @@ Below is a primitive analysis of features of alternative libraries doing similar
 | **Read from `.ini`**              | x     | x        | x  |
 | **Read from env vars**            | x     | x        | x  |
 | **Read from `.py`**               |       | x        | x  |
-| **Read from `.env`**              |       | x        |    |
+| **Read from `.env`**              |       | x        | x  |
 | **Read from dict object**         | x     |          | x  |
 | **Read from Redis**               |       | x        |    |
 | **Read from Hashicorp Vault**     |       | x        |    |
@@ -266,6 +281,10 @@ Below is a primitive analysis of features of alternative libraries doing similar
 | *Python 3.6*                      |       |          | x  |
 | *Python 3.7*                      |       |          | x  |
 | *Python 3.8*                      | x     |          | x  |
+
+## Contributing
+
+Contributions are welcome!
 
 ## Kudos
 
