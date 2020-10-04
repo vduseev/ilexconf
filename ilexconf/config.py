@@ -2,19 +2,14 @@ from collections import defaultdict
 
 from ilexconf.helpers import keyval_to_dict
 
-from typing import (
-    Any,
-    Dict,
-    Mapping,
-    List,
-)
+from typing import Any, Dict, Mapping, List, Sequence
 
-# TODO: Mapping objects in lists also should be Configs
 # TODO: Implement from_json, from_env, etc.
 # TODO: ? merging mappings with dotted keys
-# TODO: Implement flatten method to convert Config to python-configuration instance
 # TODO: Super weird error when item did not exist and we created it
 # TODO: CLI
+# TODO: Proper typing
+# TODO: Proper coverage
 
 
 class Config(defaultdict):
@@ -22,11 +17,7 @@ class Config(defaultdict):
     Config is a dictionary of other configs forming hierarchical structure.
     """
 
-    def __init__(
-        self,
-        *mappings: Mapping[Any, Any],
-        **kwargs: Dict
-    ):
+    def __init__(self, *mappings: Mapping[Any, Any], **kwargs: Dict):
         """
         Constructor.
         """
@@ -37,7 +28,8 @@ class Config(defaultdict):
         super().__init__(*(lambda: Config(),))
 
         # Merge in values of mappings
-        self.merge(*mappings)
+        for m in mappings:
+            self.merge(m)
 
         # Merge in values of keyword arguments
         for k, v in kwargs.items():
@@ -65,7 +57,68 @@ class Config(defaultdict):
         dict.__setitem__(self, attr, value)
 
     def __repr__(self):
-        return str(self.as_dict())
+        # d = dict()
+        # for key in self.keys():
+        #     if isinstance(self[key], Config):
+        #         d[key] = self[key].__repr__()
+        #     else:
+        #         d[key] = str(self[key])
+        return f"Config{dict.__repr__(self)}"
+
+    def merge(self, mapping: Mapping[Any, Any]) -> None:
+        """
+        Merge values of mapping with current config recursively.
+        """
+        # For every key of that mapping
+        for key, value in mapping.items():
+
+            parsed = self._parse(value)
+            self.update(
+                {
+                    key: Config(self[key], parsed)
+                    if key in self and isinstance(self[key], Config)
+                    else parsed
+                }
+            )
+
+    def _parse(self, value: Any):
+        # If value is another Mapping: dict, Config, etc.
+        if isinstance(value, Mapping):
+            return Config(value)
+
+        # If value is a Sequence but not str, bytes, or bytearray
+        elif isinstance(value, Sequence) and not isinstance(
+            value, (str, bytes, bytearray)
+        ):
+            l = list()
+            for i in value:
+                l.append(self._parse(i))
+            # Return sequence with the same type
+            t = type(value)
+            return t(l)
+
+        # If value is anything else
+        else:
+            return value
+
+    def flatten(self, prefix="", separator="."):
+        """
+        Flatten Config object to dictionary with depth 1.
+        """
+        d = dict()
+        p = f"{prefix}{separator}" if prefix else ""
+        for key in self.keys():
+            if isinstance(self[key], Config):
+                flattened = self[key].flatten(prefix=f"{p}{key}", separator=separator)
+                d.update(flattened)
+            else:
+                d[f"{p}{key}"] = self[key]
+
+    def copy(self):
+        """
+        Return deep copy of the Config object.
+        """
+        return Config(self.as_dict())
 
     def as_dict(self):
         d = dict()
@@ -75,21 +128,6 @@ class Config(defaultdict):
             else:
                 d[key] = self[key]
         return d
-
-    def merge(self, *mappings: Mapping[Any, Any]) -> None:
-        """
-        Merge values of mappings with current config recursively.
-        """
-
-        for m in mappings:
-            for key in m.keys():
-                if isinstance(m[key], Mapping):
-                    if key in self:
-                        self.update({key: Config(self[key], m[key])})
-                    else:
-                        self.update({key: Config(m[key])})
-                else:
-                    self.update({key: m[key]})
 
     def as_table(
         self,
@@ -144,9 +182,3 @@ class Config(defaultdict):
             rows.append(["...", "..."])
 
         return (headers, rows)
-
-    def copy(self):
-        """
-        Return deep copy of the Config object.
-        """
-        return Config(self.as_dict())

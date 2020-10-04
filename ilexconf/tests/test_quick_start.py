@@ -1,5 +1,6 @@
 from ilexconf import Config, from_json, to_json
-#from ilexconf.tests.debug import debug
+
+# from ilexconf.tests.debug import debug
 
 import os
 import pytest
@@ -32,7 +33,9 @@ def resulting_dict():
     }
 
 
-def test_quick_start(settings_json_dict, settings_json_file_path, resulting_dict, tmp_path):
+def test_quick_start(
+    settings_json_dict, settings_json_file_path, resulting_dict, tmp_path
+):
     # Single instance of config shared between all tests in this module
     config = Config()
 

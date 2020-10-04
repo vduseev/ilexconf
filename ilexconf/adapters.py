@@ -30,6 +30,14 @@ def from_env(prefix="", separator="__", lowercase=False):
     return config
 
 
+def to_env(data: Mapping[Any, Any]):
+    """
+    Set environment variales for child processes invoked using
+    methods like os.system(), popen() or fork() and execv().
+    """
+    config = Config(data)
+
+
 def from_json(data: Union[str, TextIO], read_from_file: bool = True):
     """
     Read data from JSON file or JSON string.
