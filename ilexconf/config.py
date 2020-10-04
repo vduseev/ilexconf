@@ -11,11 +11,10 @@ from typing import (
 
 # TODO: Mapping objects in lists also should be Configs
 # TODO: Implement from_json, from_env, etc.
-# TODO: update existing Config using merge
-# TODO: merging mappings with dotted keys
-# TODO: Implement copy method
+# TODO: ? merging mappings with dotted keys
 # TODO: Implement flatten method to convert Config to python-configuration instance
 # TODO: Super weird error when item did not exist and we created it
+# TODO: CLI
 
 
 class Config(defaultdict):
@@ -64,6 +63,9 @@ class Config(defaultdict):
 
     def __setattr__(self, attr, value):
         dict.__setitem__(self, attr, value)
+
+    def __repr__(self):
+        return str(self.as_dict())
 
     def as_dict(self):
         d = dict()
@@ -143,5 +145,8 @@ class Config(defaultdict):
 
         return (headers, rows)
 
-    def __repr__(self):
-        return str(self.as_dict())
+    def copy(self):
+        """
+        Return deep copy of the Config object.
+        """
+        return Config(self.as_dict())
