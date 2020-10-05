@@ -55,14 +55,16 @@ config = from_env()
 config = Config(
     # Take the basic settings from JSON file
     from_json("settings.json"),
-    # Merge them with a dictionary
+
+    # Merge the dictionary into that
     { "database": { "connection": { "host": "test.local" } } },
+
     # Merge the keyword arguments on top
     database__connection__port=4000
 )
 ```
 
-When we initialize config all the values are merged. Every next argument is merged on top of the previous mapping values. And keyword arguments override even that.
+When we initialize config all the values are merged. Arguments are merged in order. Every next argument is merged on top of the previous mapping values. And keyword arguments override even that. _For more details read about <a href="#quick_start_merge">merging</a> strategy below.
 
 For a settings file `settings.json` with the following content ...
 
@@ -165,7 +167,7 @@ assert config.database.connection.password == "secret stuff"
 ```
 
 <a id="quick_start_merge"></a>
-### Update with another Mapping object
+### Merge with another Mapping object
 
 If you just assign a value to any key, you override any previous value of that key.
 
@@ -174,6 +176,19 @@ In order to merge assigned value with an existing one, use `merge` method.
 ```python
 config.database.connection.merge({ "password": "different secret" })
 assert config.database.connection.password == "different secret"
+```
+
+`merge` respects the contents of each value. For example, merging two dictionaries with the same key would not override that key completely. Instead, it will recursively look into each key and try to merge the contents. Take this example:
+
+```python
+config = Config(
+    { "a1": { "c1": 1, "c2": 2, "c3": 3 } },
+    { "a1": { "c3": "other" } }
+)
+
+# Instead of overriding the value of the "a1" key completely, `merge` method
+# will recursively look inside and merge nested values.
+assert config.as_dict() == { "a1": { "c1": 1, "c2": 2, "c3": 3 } }
 ```
 
 <a id="quick_start_as_dict"></a>
@@ -247,40 +262,6 @@ assert config.Horizon == "Up"
 Under the hood `ilexconf` is implemented as a `defaultdict` where every key with Mapping value is represented as another `Config` object. This creates a hierarchy of `Config` objects.
 
 `__getitem__`, `__setitem__`, `__getattr__`, and `__setattr__` methods are overloaded with custom logic to support convenient get/set approach presented by the library.
-
-<a id="alternatives"></a>
-## Alternative Libraries
-
-Below is a primitive analysis of features of alternative libraries doing similar job.
-
-| Library                           | **ilexconf** | dynaconf | python-configuration |
-| --------------------------------- | ----- | -------- | -- |
-| **Read from `.json`**             | x     | x        | x  |
-| **Read from `.toml`**             | x     | x        | x  |
-| **Read from `.ini`**              | x     | x        | x  |
-| **Read from env vars**            | x     | x        | x  |
-| **Read from `.py`**               |       | x        | x  |
-| **Read from `.env`**              |       | x        | x  |
-| **Read from dict object**         | x     |          | x  |
-| **Read from Redis**               |       | x        |    |
-| **Read from Hashicorp Vault**     |       | x        |    |
-| **Default values**                | x     | x        |    |    
-| **Multienvironment**              |       | x        |    |
-| **Attribute access**              | x     | x        | x  |
-| **Dotted key access**             | x     | x        | x  |
-| **Merging**                       | x     | x        | x  |
-| **Interpolation**                 |       | x        | x  |
-| **Saving**                        | x     | x        |    |
-| **CLI**                           | x     | x        |    |
-| **Printing**                      | x     | x        |    |
-| **Validators**                    |       | x        |    |
-| **Masking sensitive info**        |       | x        | x  |
-| **Django integration**            |       | x        |    |
-| **Flask integration**             |       | x        |    |
-| **Hot reload**                    |       |          |    |
-| *Python 3.6*                      |       |          | x  |
-| *Python 3.7*                      |       |          | x  |
-| *Python 3.8*                      | x     |          | x  |
 
 ## Contributing
 
