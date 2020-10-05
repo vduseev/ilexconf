@@ -4,7 +4,7 @@
 
 <p align="center">
 <a href="https://travis-ci.org/vduseev/ilexconf"><img alt="Build Status" src="https://travis-ci.org/vduseev/ilexconf.svg?branch=master"></a>
-<a href="https://coveralls.io/github/psf/black?branch=master"><img alt="Coverage Status" src="https://coveralls.io/repos/github/psf/black/badge.svg?branch=master"></a>
+<a href="https://codecov.io/gh/vduseev/ilexconf"><img alt="Coverage Report" src="https://codecov.io/gh/vduseev/ilexconf/branch/master/graph/badge.svg"></a>
 <a href="https://github.com/psf/black/blob/master/LICENSE"><img alt="License: MIT" src="https://black.readthedocs.io/en/stable/_static/license.svg"></a>
 <a href="https://pypi.org/project/ilexconf/"><img alt="PyPI" src="https://img.shields.io/pypi/v/ilexconf"></a>
 <a href="https://github.com/psf/black"><img alt="Code style: black" src="https://img.shields.io/badge/code%20style-black-000000.svg"></a>
@@ -64,7 +64,7 @@ config = Config(
 )
 ```
 
-When we initialize config all the values are merged. Arguments are merged in order. Every next argument is merged on top of the previous mapping values. And keyword arguments override even that. _For more details read about <a href="#quick_start_merge">merging</a> strategy below.
+When we initialize config all the values are merged. Arguments are merged in order. Every next argument is merged on top of the previous mapping values. And keyword arguments override even that. _For more details read about <a href="#quick_start_merge">merging</a> strategy below_.
 
 For a settings file `settings.json` with the following content ...
 
