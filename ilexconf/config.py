@@ -113,6 +113,7 @@ class Config(defaultdict):
                 d.update(flattened)
             else:
                 d[f"{p}{key}"] = self[key]
+        return d
 
     def copy(self):
         """
@@ -139,7 +140,7 @@ class Config(defaultdict):
         Transform multilevel dictionary into table structure suitable for printing by Cleo library.
         """
 
-        def processor(c: Dict, rows: Rows, level: int):
+        def processor(c: Dict, rows: List, level: int):
             # Increment level so that all child rows are indented
             level += 1
             for k in sorted(c.keys()):
@@ -151,8 +152,11 @@ class Config(defaultdict):
                     # Can't do isinstance(c, collections.Mapping) because
                     # config that needs this method is not a Mapping subclass
                     is_dict = hasattr(c[k], "keys")
-                except KeyError:
+                except KeyError: # pragma: no cover
                     is_dict = False
+
+                if limit and len(rows) >= limit:
+                    break
 
                 if is_dict:
                     # Add category row
@@ -172,13 +176,10 @@ class Config(defaultdict):
                     )
                     rows.append([table_key, clipped])
 
-                if limit > 0 and len(rows) > limit:
-                    break
-
         # Populate rows
         rows = []
         processor(self, rows, -1)
-        if len(rows) > limit:
+        if limit and len(rows) >= limit:
             rows.append(["...", "..."])
 
         return (headers, rows)

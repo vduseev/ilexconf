@@ -6,19 +6,6 @@ import os
 import pytest
 
 
-FIXTURE_DIR = os.path.join(os.path.dirname(os.path.realpath(__file__)), "files")
-
-
-@pytest.fixture(scope="module")
-def settings_json_dict():
-    return {"database": {"connection": {"host": "localhost", "port": 5432}}}
-
-
-@pytest.fixture(scope="module")
-def settings_json_file_path():
-    return os.path.join(FIXTURE_DIR, "settings.json")
-
-
 @pytest.fixture(scope="module")
 def resulting_dict():
     return {

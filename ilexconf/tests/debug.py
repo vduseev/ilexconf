@@ -1,7 +1,7 @@
-import debugpy
+import debugpy # pragma: no cover
 
 
-def debug():
+def debug(): # pragma: no cover
     debugpy.listen(("0.0.0.0", 10001))
     print("⏳ VS Code debugger can now be attached, press F5 in VS Code ⏳", flush=True)
     debugpy.wait_for_client()
