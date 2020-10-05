@@ -12,9 +12,11 @@ install:
 - poetry install -E yaml -E console
 
 script:
-- poetry run pytest
+- poetry run pytest --cov --cov-report=xml
 
 after_success:
+# Upload coverage report to codecov.io
+- bash <(curl -s https://codecov.io/bash)
 # Bump version to x.x.BUILD_NUMBER
 - sed -i "s/\(version = \"[[:digit:]]\.[[:digit:]]\).*\"/\1.$TRAVIS_BUILD_NUMBER\"/" pyproject.toml
 # Publish package
