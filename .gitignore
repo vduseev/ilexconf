@@ -3,6 +3,8 @@ __pycache__
 dist
 .pytest_cache
 .mypy_cache
+.coverage
+**/*,cover
 
 # VS Code
 .vscode
