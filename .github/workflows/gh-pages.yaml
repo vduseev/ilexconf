@@ -31,6 +31,7 @@ jobs:
       - name: Copy built docs to temporary location
         run: |
           tmpdir=$(mktemp -d)
+          echo "${tmpdir}"
           rsync -av "docs/_build/html/" "${tmpdir}/"
 
       - name: Push docs to gh-pages branch
@@ -40,7 +41,8 @@ jobs:
           git config --global user.email "${GITHUB_ACTOR}@users.noreply.github.com"
 
           # Init empty repo in tmp directory
-          cd "${tmpdir}"
+          pushd "${tmpdir}"
+          echo "${tmpdir}"
           git init
           git remote add deploy "https://token:${{ secrets.GITHUB_TOKEN }}@github.com/${GITHUB_REPOSITORY}.git"
           git checkout -b gh-pages
