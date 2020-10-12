@@ -16,12 +16,14 @@ def from_env(prefix="", separator="__", lowercase=False):
     for k, v in os.environ.items():
         if prefix and not k.startswith(prefix):
             # If prefix is specified, then ignore the values without it
+            print(f"Skipping {k}")
             continue
 
         # Strip key off of prefix
         prefixless_key = k[len(prefix) :]
+        print(f"prefixless {prefixless_key}")
         # Lowercase key if needed
-        key = k.lower() if lowercase else k
+        key = prefixless_key.lower() if lowercase else prefixless_key
         # Convert current key-value pair to Mapping
         d = keyval_to_dict(key, v, prefix=prefix, separator=separator)
         # Merge this Mapping into config

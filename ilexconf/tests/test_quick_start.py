@@ -1,9 +1,9 @@
+import os
+import pytest
+
 from ilexconf import Config, from_json, to_json
 
 # from ilexconf.tests.debug import debug
-
-import os
-import pytest
 
 
 @pytest.fixture(scope="module")
@@ -23,28 +23,48 @@ def resulting_dict():
 def test_quick_start(
     settings_json_dict, settings_json_file_path, resulting_dict, tmp_path
 ):
+    # os.putenv("AWS_DEFAULT_REGION", "us-east-1")
+    os.environ["AWS_DEFAULT_REGION"] = "us-east-1"
+
     # [create]
     from ilexconf import Config, from_json, from_env, to_json
 
     # Empty config
     config = Config()
+    assert config.as_dict() == {}
 
     # Create config from json and merge it into our initial config
     # Let settings_json_file_path = "settings.json" where inside the file we have
     # { "database": { "connection": { "host": "localhost", "port": 5432 } } }
     config.merge(from_json(settings_json_file_path))
+    assert config.as_dict() == {
+        "database": {"connection": {"host": "localhost", "port": 5432}}
+    }
 
     # Merge dict into config
     config.merge({"database": {"connection": {"host": "test.local"}}})
+    assert config.as_dict() == {
+        "database": {"connection": {"host": "test.local", "port": 5432}}
+    }
 
     # Merge environment variables into config
-    config.merge(from_env(prefix="AWS", separator="_"))
+    config.merge(from_env(prefix="AWS_", separator="__", lowercase=True))
+    assert config.as_dict() == {
+        "database": {"connection": {"host": "test.local", "port": 5432}},
+        "default_region": "us-east-1",
+    }
 
     # Merge keyword arguments
     config.merge(my__keyword__argument=True)
+    assert config.as_dict() == {
+        "database": {"connection": {"host": "test.local", "port": 5432}},
+        "default_region": "us-east-1",
+        "my": {"keyword": {"argument": True}},
+    }
 
     # Clear values, just like with dict
     config.clear()
+    assert config.as_dict() == {}
 
     # Or, better yet, do this all in one step, since Config() constructor
     # accepts any number of mapping objects and keyword arguments as
@@ -55,8 +75,6 @@ def test_quick_start(
         {"database": {"connection": {"host": "test.local"}}},
         database__connection__port=4000,
     )
-
-    # Check it was created and values are merged properly
     assert config.as_dict() == {
         "database": {"connection": {"host": "test.local", "port": 4000}}
     }
@@ -185,6 +203,7 @@ def test_quick_start(
 
             # Merge one more mapping on top
             self.merge({"Horizon": "Up"})
+
     # [subclass]
 
     # [test-subclass]
@@ -202,10 +221,6 @@ def test_quick_start(
             },
         },
         "Horizon": "Up",
-        "my": {
-            "custom": {
-                "key": "Yes, do stuff"
-            }
-        }
+        "my": {"custom": {"key": "Yes, do stuff"}},
     }
     # [test-subclass]
