@@ -34,9 +34,13 @@ jobs:
           echo "${docsdir}"
           rsync -av "docs/_build/html/" "${docsdir}/"
 
-
       - name: Push docs to gh-pages branch
         run: |
+
+          # Check files
+          echo "Step 0"
+          ls -la "${docsdir}"
+
           # Change git username
           echo "Step 1"
           git config --global user.name "${GITHUB_ACTOR}"
@@ -46,9 +50,9 @@ jobs:
           # Init empty repo in tmp directory
           pushd "${docsdir}"
           echo "${docsdir}"
-          git init
-          git remote add deploy "https://token:${{ secrets.GITHUB_TOKEN }}@github.com/${GITHUB_REPOSITORY}.git"
-          git checkout -b gh-pages
+          git -C "${docsdir}" init
+          git -C "${docsdir}" remote add deploy "https://token:${{ secrets.GITHUB_TOKEN }}@github.com/${GITHUB_REPOSITORY}.git"
+          git -C "${docsdir}" checkout -b gh-pages
 
           echo "Step 3"
           # Prevents contents of the branch from being build as Jekyll sources
@@ -56,18 +60,12 @@ jobs:
 
           echo "Step 4"
           # Add README disclaimer
-          cat > README.md <<EOF
-          # GitHub Pages for `ilexconf`
-
-          The contents of this branch are built using GitHub Actions workflow and Sphinx.
-          
-          See built docs on: [ilexconf.com](https://ilexconf.com)
-          EOF
+          echo "# GitHub Pages for `ilexconf`" >> README.md
+          echo "The contents of this branch are built using GitHub Actions workflow and Sphinx." >> README.md
+          echo "See built docs on: [ilexconf.com](https://ilexconf.com)" >> README.md
 
           echo "Step 5"
           # Push everything to GitHub's remote branch
-          git add .
-          git commit -m "📝 Rebuilt docs for commit ${GITHUB_SHA:0:6}"
-          git push deploy gh-pages --force
-
-
+          git -C "${docsdir}" add .
+          git -C "${docsdir}" commit -m "📝 Rebuilt docs for commit ${GITHUB_SHA:0:6}"
+          git -C "${docsdir}" push deploy gh-pages --force
