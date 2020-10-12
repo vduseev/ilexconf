@@ -40,19 +40,22 @@ jobs:
 
           # Init empty repo in tmp directory
           pushd "${docsdir}"
-          git -C "${docsdir}" init
-          git -C "${docsdir}" remote add deploy "https://token:${{ secrets.GITHUB_TOKEN }}@github.com/${GITHUB_REPOSITORY}.git"
-          git -C "${docsdir}" checkout -b gh-pages
+          git init
+          git remote add deploy "https://token:${{ secrets.GITHUB_TOKEN }}@github.com/${GITHUB_REPOSITORY}.git"
+          git checkout -b gh-pages
 
           # Prevents contents of the branch from being build as Jekyll sources
           touch .nojekyll
 
           # Add README disclaimer
-          echo "# GitHub Pages for `ilexconf`" >> README.md
-          echo "The contents of this branch are built using GitHub Actions workflow and Sphinx." >> README.md
-          echo "See built docs on [ilexconf.com](https://ilexconf.com)" >> README.md
+          echo "# GitHub Pages for `ilexconf`\n" >> README.md
+          echo "The contents of this branch are built using GitHub Actions workflow and Sphinx.\n" >> README.md
+          echo "See built docs at [ilexconf.com](https://ilexconf.com)\n" >> README.md
+
+          # Make sure CNAME is added
+          echo "ilexconf.com" > CNAME
 
           # Push everything to GitHub's remote branch
-          git -C "${docsdir}" add .
-          git -C "${docsdir}" commit -m "📝 Rebuilt docs for commit ${GITHUB_SHA:0:6}"
-          git -C "${docsdir}" push deploy gh-pages --force
+          git add .
+          git commit -m "📝 Rebuilt docs for commit ${GITHUB_SHA:0:6}"
+          git push deploy gh-pages --force
