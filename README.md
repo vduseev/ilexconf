@@ -3,10 +3,10 @@
 <h2 align="center">Configuration Library 🔧 for Python</h2>
 
 <p align="center">
-<a href="https://travis-ci.org/vduseev/ilexconf"><img alt="Build status of package" src="https://img.shields.io/travis/ilexconf/ilexconf?logo=travis"></a>
-<a href="https://ilexconf.com"><img alt="Build status of GitHub pages docs" src="https://img.shields.io/github/workflow/status/ilexconf/ilexconf/docs?label=docs&logo=github"></a>
+<a href="https://travis-ci.org/ilexconf/ilexconf"><img alt="Build status of package" src="https://img.shields.io/travis/ilexconf/ilexconf?logo=travis"></a>
+<a href="https://github.com/ilexconf/ilexconf/actions?query=workflow%3Adocs"><img alt="Build status of GitHub pages docs" src="https://img.shields.io/github/workflow/status/ilexconf/ilexconf/docs?label=docs&logo=github"></a>
 <a href="https://ilexconf.readthedocs.io/"><img alt="Build status of Read the Docs" src="https://img.shields.io/readthedocs/ilexconf?label=readthedocs&logo=read-the-docs"></a>
-<a href="https://codecov.io/gh/vduseev/ilexconf"><img alt="Code coverage report" src="https://img.shields.io/codecov/c/github/ilexconf/ilexconf?logo=codecov"></a>
+<a href="https://codecov.io/gh/ilexconf/ilexconf"><img alt="Code coverage report" src="https://img.shields.io/codecov/c/github/ilexconf/ilexconf?logo=codecov"></a>
 <a href="https://pypi.org/project/ilexconf/"><img alt="PyPI" src="https://img.shields.io/pypi/v/ilexconf?logo=pypi&color=blue"></a>
 </p>
 
@@ -14,6 +14,7 @@
 
 ## Table of contents 
 
+* <a href="https://ilexconf.com">📝 Documentation at ilexconf.com</a>
 * <a href="#quick_start">🚀 Quick Start</a>
   * <a href="#quick_start_install">Installation</a>
   * <a href="#quick_start_create">Create `Config` object</a>
@@ -25,6 +26,8 @@
   * <a href="#quick_start_write">Save to file using `to_` functions</a>
   * <a href="#quick_start_subclass">Subclass `Config` to customize</a>
 * <a href="#internals">⚙️ Internals – How it Works</a>
+  * <a href="#internals_implementation">Subclassing `dict` and overriding</a>
+  * <a href="#internals_documentation">Building and hosting docs</a>
 
 <a id="quick_start"></a>
 ## Quick Start
@@ -259,9 +262,23 @@ assert config.Horizon == "Up"
 <a id="internals"></a>
 ## Internals
 
+<a id="internals_implementation"></a>
+### Implementation
+
 Under the hood `ilexconf` is implemented as a `defaultdict` where every key with Mapping value is represented as another `Config` object. This creates a hierarchy of `Config` objects.
 
 `__getitem__`, `__setitem__`, `__getattr__`, and `__setattr__` methods are overloaded with custom logic to support convenient get/set approach presented by the library.
+
+<a id="internals_documentation"></a>
+### Documentation
+
+Full documentation is available at **[ilexconf.com](https://ilexconf.com)** and on ilexconf.readthedocs.io.
+
+* Documentation is written using `reStructuredText` and uses real code snippets from the unit tests and source code.
+* Documentation is built using [Sphinx](https://www.sphinx-doc.org/) using [sphinx-material](https://github.com/bashtage/sphinx-material) theme.
+* Documentation is hosted on Github Pages at [ilexconf.com](https://ilexconf.com) and on "Read the Docs" at [ilexconf.readthedocs.io](https://ilexconf.readthedocs.io/).
+* For Github Pages documentation is built using Github Actions.
+* Read the Docs builds their version automatically based on the `.readthedocs.yml` config in the project root directory.
 
 ## Contributing
 

@@ -7,8 +7,8 @@ maintainers = ["vduseev <vagiz@duseev.com>"]
 license = "MIT"
 keywords = ["configuration", "settings", "json", "yaml", "ini"]
 readme = "README.md"
-homepage = "https://github.com/vduseev/ilexconf"
-repository = "https://github.com/vduseev/ilexconf"
+homepage = "https://github.com/ilexconf/ilexconf"
+repository = "https://github.com/ilexconf/ilexconf"
 documentation = "https://ilexconf.com"
 
 [tool.poetry.dependencies]
