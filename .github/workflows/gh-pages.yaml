@@ -32,37 +32,26 @@ jobs:
         
           # Copy built results to the temporary directory
           docsdir=$(mktemp -d)
-          echo "${docsdir}"
           rsync -av "docs/_build/html/" "${docsdir}/"
 
-          # Check files
-          echo "Step 0"
-          ls -la "${docsdir}"
-
           # Change git username
-          echo "Step 1"
           git config --global user.name "${GITHUB_ACTOR}"
           git config --global user.email "${GITHUB_ACTOR}@users.noreply.github.com"
 
-          echo "Step 2"
           # Init empty repo in tmp directory
           pushd "${docsdir}"
-          echo "${docsdir}"
           git -C "${docsdir}" init
           git -C "${docsdir}" remote add deploy "https://token:${{ secrets.GITHUB_TOKEN }}@github.com/${GITHUB_REPOSITORY}.git"
           git -C "${docsdir}" checkout -b gh-pages
 
-          echo "Step 3"
           # Prevents contents of the branch from being build as Jekyll sources
           touch .nojekyll
 
-          echo "Step 4"
           # Add README disclaimer
           echo "# GitHub Pages for `ilexconf`" >> README.md
           echo "The contents of this branch are built using GitHub Actions workflow and Sphinx." >> README.md
-          echo "See built docs on: [ilexconf.com](https://ilexconf.com)" >> README.md
+          echo "See built docs on [ilexconf.com](https://ilexconf.com)" >> README.md
 
-          echo "Step 5"
           # Push everything to GitHub's remote branch
           git -C "${docsdir}" add .
           git -C "${docsdir}" commit -m "📝 Rebuilt docs for commit ${GITHUB_SHA:0:6}"
