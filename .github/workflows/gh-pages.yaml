@@ -23,19 +23,17 @@ jobs:
           # Install dependencies with poetry
           poetry install
 
-      - name: Build docs using Sphinx
+      - name: Build docs and push them to gh-pages branch
         run: |
+
+          # Build docs
           make -C docs clean
           make -C docs html
         
-      - name: Copy built docs to temporary location
-        run: |
+          # Copy built results to the temporary directory
           docsdir=$(mktemp -d)
           echo "${docsdir}"
           rsync -av "docs/_build/html/" "${docsdir}/"
-
-      - name: Push docs to gh-pages branch
-        run: |
 
           # Check files
           echo "Step 0"
