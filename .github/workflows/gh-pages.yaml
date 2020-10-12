@@ -30,26 +30,31 @@ jobs:
         
       - name: Copy built docs to temporary location
         run: |
-          tmpdir=$(mktemp -d)
-          echo "${tmpdir}"
-          rsync -av "docs/_build/html/" "${tmpdir}/"
+          docsdir=$(mktemp -d)
+          echo "${docsdir}"
+          rsync -av "docs/_build/html/" "${docsdir}/"
+
 
       - name: Push docs to gh-pages branch
         run: |
           # Change git username
+          echo "Step 1"
           git config --global user.name "${GITHUB_ACTOR}"
           git config --global user.email "${GITHUB_ACTOR}@users.noreply.github.com"
 
+          echo "Step 2"
           # Init empty repo in tmp directory
-          pushd "${tmpdir}"
-          echo "${tmpdir}"
+          pushd "${docsdir}"
+          echo "${docsdir}"
           git init
           git remote add deploy "https://token:${{ secrets.GITHUB_TOKEN }}@github.com/${GITHUB_REPOSITORY}.git"
           git checkout -b gh-pages
 
+          echo "Step 3"
           # Prevents contents of the branch from being build as Jekyll sources
           touch .nojekyll
 
+          echo "Step 4"
           # Add README disclaimer
           cat > README.md <<EOF
           # GitHub Pages for `ilexconf`
@@ -59,6 +64,7 @@ jobs:
           See built docs on: [ilexconf.com](https://ilexconf.com)
           EOF
 
+          echo "Step 5"
           # Push everything to GitHub's remote branch
           git add .
           git commit -m "📝 Rebuilt docs for commit ${GITHUB_SHA:0:6}"
