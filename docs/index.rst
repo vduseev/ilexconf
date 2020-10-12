@@ -11,6 +11,7 @@ Welcome to ilexconf's documentation!
    :caption: Contents:
 
    usage/installation
+   usage/quickstart
 
 
 Indices and tables

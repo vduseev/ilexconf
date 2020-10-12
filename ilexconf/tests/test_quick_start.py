@@ -23,13 +23,33 @@ def resulting_dict():
 def test_quick_start(
     settings_json_dict, settings_json_file_path, resulting_dict, tmp_path
 ):
-    # Single instance of config shared between all tests in this module
+    # [create]
+    from ilexconf import Config, from_json, from_env, to_json
+
+    # Empty config
     config = Config()
 
-    # CREATE
-    #########
+    # Create config from json and merge it into our initial config
+    # Let settings_json_file_path = "settings.json" where inside the file we have
+    # { "database": { "connection": { "host": "localhost", "port": 5432 } } }
+    config.merge(from_json(settings_json_file_path))
 
-    # Create configuration using JSON file, dictionary and key-value pair
+    # Merge dict into config
+    config.merge({"database": {"connection": {"host": "test.local"}}})
+
+    # Merge environment variables into config
+    config.merge(from_env(prefix="AWS", separator="_"))
+
+    # Merge keyword arguments
+    config.merge(my__keyword__argument=True)
+
+    # Clear values, just like with dict
+    config.clear()
+
+    # Or, better yet, do this all in one step, since Config() constructor
+    # accepts any number of mapping objects and keyword arguments as
+    # initialization parameters. However, order of parameters matters.
+    # Last mappings are merged on top of others. And keywords override even that.
     config = Config(
         from_json(settings_json_file_path),
         {"database": {"connection": {"host": "test.local"}}},
@@ -40,9 +60,7 @@ def test_quick_start(
     assert config.as_dict() == {
         "database": {"connection": {"host": "test.local", "port": 4000}}
     }
-
-    # READ
-    #######
+    # [create]
 
     # from ilexconf import (
     #     from_json,
@@ -53,9 +71,12 @@ def test_quick_start(
     #     # from_dotenv,
     #     from_env,
     # )
-
+    # [read]
     cfg1 = from_json(settings_json_file_path)
-    assert cfg1.as_dict() == settings_json_dict
+    assert cfg1.as_dict() == {
+        "database": {"connection": {"host": "localhost", "port": 5432}}
+    }
+    # [read]
 
     # cfg2 = Config(
     #     from_yaml("settings.yaml"),
@@ -69,17 +90,14 @@ def test_quick_start(
     #     from_env()
     # )
 
-    # ACCESS
-    #########
-
+    # [access]
     # Classic way
-    print(config.as_dict())
     assert config["database"]["connection"]["host"] == "test.local"
 
-    # Dotted key
+    # Dotted key notation
     assert config["database.connection.host"] == "test.local"
 
-    # Attributes
+    # Via attributes
     assert config.database.connection.host == "test.local"
 
     # Any combination of the above
@@ -87,58 +105,107 @@ def test_quick_start(
     assert config.database["connection.host"] == "test.local"
     assert config.database["connection"].host == "test.local"
     assert config.database.connection["host"] == "test.local"
+    # [access]
 
-    # CHANGE & CREATE
-    ##################
-
-    # Classic way
+    # [upsert]
+    # Change value that already exists in the dictionary
+    # just like you would do with simple dict
     config["database"]["connection"]["port"] = 8080
     assert config["database"]["connection"]["port"] == 8080
 
-    # Dotted key (that does not exist yet)
+    # Create new value using 'dotted notation'. Notice that
+    # 'user' field did not exist before.
     config["database.connection.user"] = "root"
     assert config["database.connection.user"] == "root"
 
-    # Attributes (also does not exist yet)
+    # Create new value using. 'password' field did not exist
+    # before we assigned a value to it and was created automatically.
     config.database.connection.password = "secret stuff"
     assert config.database.connection.password == "secret stuff"
+    # [upsert]
 
-    # MERGE
-    ########
-
+    # [merge]
+    # Config correctly merges nested values. Notice how it overrides
+    # the value of the 'password' key in the nested 'connection' config
+    # from 'secret stuff' to 'different secret'
     config.database.connection.merge({"password": "different secret"})
     assert config.database.connection.password == "different secret"
+    # [merge]
 
-    # AS_DICT
-    ##########
+    # [smart-merge]
+    merged = Config({"a1": {"c1": 1, "c2": 2, "c3": 3}}, {"a1": {"c3": "other"}})
 
-    assert config.as_dict() == resulting_dict
+    # Instead of overriding the value of the "a1" key completely, `merge` method
+    # will recursively look inside and merge nested values.
+    assert merged.as_dict() == {"a1": {"c1": 1, "c2": 2, "c3": "other"}}
+    # [smart-merge]
 
-    # WRITE
-    ########
+    # [as-dict]
+    assert config.as_dict() == {
+        "database": {
+            "connection": {
+                "host": "test.local",
+                "port": 8080,
+                "user": "root",
+                "password": "different secret",
+            }
+        }
+    }
+    # [as-dict]
 
+    # [write]
     # Temporary path
     p = tmp_path / "settings.json"
     # Save config
     to_json(config, str(p))
     # Verify written file is correct
-    assert from_json(str(p)).as_dict() == resulting_dict
+    assert from_json(str(p)).as_dict() == {
+        "database": {
+            "connection": {
+                "host": "test.local",
+                "port": 8080,
+                "user": "root",
+                "password": "different secret",
+            }
+        }
+    }
+    # [write]
 
-    # SUBCLASSING
-    ##############
-
+    # [subclass]
     class MyConfig(Config):
         def __init__(self, do_stuff=False):
-            # Initialize your custom config with JSON by default
+            # Initialize your custom config using json settings file
             super().__init__(self, from_json(settings_json_file_path))
 
             # Add some custom value depending on some logic
             if do_stuff:
+                # Here, we create new nested key that did not exist
+                # before and assign a value to it.
                 self.my.custom.key = "Yes, do stuff"
 
+            # Merge one more mapping on top
             self.merge({"Horizon": "Up"})
+    # [subclass]
 
-    # Now you can use your custom Configuration everywhere
+    # [test-subclass]
+    # Now you can use your custom defined Config. Given the `setting.json` file that
+    # contains { "database": { "connection": { "host": "localhost", "port": 5432 } } }
+    # MyConfig will have the following values:
+
     config = MyConfig(do_stuff=True)
-    assert config.my.custom.key == "Yes, do stuff"
-    assert config.Horizon == "Up"
+    print(config.as_dict())
+    assert config.as_dict() == {
+        "database": {
+            "connection": {
+                "host": "localhost",
+                "port": 5432,
+            },
+        },
+        "Horizon": "Up",
+        "my": {
+            "custom": {
+                "key": "Yes, do stuff"
+            }
+        }
+    }
+    # [test-subclass]
