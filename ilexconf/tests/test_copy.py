@@ -1,5 +1,5 @@
 from ilexconf import Config, from_json
- 
+
 import pytest
 
 

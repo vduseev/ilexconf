@@ -12,8 +12,9 @@ def test_simple_as_table(settings_json_dict):
         ["database", ""],
         ["  connection", ""],
         ["    host", "localhost"],
-        ["    port", "5432"]
+        ["    port", "5432"],
     ]
+
 
 def test_limit_as_table(settings_json_dict):
     config = Config(settings_json_dict)
@@ -23,5 +24,5 @@ def test_limit_as_table(settings_json_dict):
         ["database", ""],
         ["  connection", ""],
         ["    host", "localhost"],
-        ["...", "..."]
+        ["...", "..."],
     ]
