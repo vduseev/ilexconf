@@ -4,13 +4,6 @@ from ilexconf.helpers import keyval_to_dict
 
 from typing import Any, Dict, Mapping, List, Sequence
 
-# TODO: Implement from_json, from_env, etc.
-# TODO: ? merging mappings with dotted keys
-# TODO: Super weird error when item did not exist and we created it
-# TODO: CLI
-# TODO: Proper typing
-# TODO: Proper coverage
-
 
 class Config(defaultdict):
     """
@@ -28,13 +21,7 @@ class Config(defaultdict):
         super().__init__(*(lambda: Config(),))
 
         # Merge in values of mappings
-        for m in mappings:
-            self.merge(m)
-
-        # Merge in values of keyword arguments
-        for k, v in kwargs.items():
-            parsed = keyval_to_dict(k, v)
-            self.merge(parsed)
+        self.merge(*mappings, **kwargs)
 
     def __getitem__(self, item):
         if isinstance(item, str) and "." in item:
@@ -65,21 +52,27 @@ class Config(defaultdict):
         #         d[key] = str(self[key])
         return f"Config{dict.__repr__(self)}"
 
-    def merge(self, mapping: Mapping[Any, Any]) -> None:
+    def merge(self, *mappings: Mapping[Any, Any], **kwargs) -> None:
         """
-        Merge values of mapping with current config recursively.
+        Merge values of mappings with current config recursively.
         """
         # For every key of that mapping
-        for key, value in mapping.items():
+        for mapping in mappings:
+            for key, value in mapping.items():
 
-            parsed = self._parse(value)
-            self.update(
-                {
-                    key: Config(self[key], parsed)
-                    if key in self and isinstance(self[key], Config)
-                    else parsed
-                }
-            )
+                parsed = self._parse(value)
+                self.update(
+                    {
+                        key: Config(self[key], parsed)
+                        if key in self and isinstance(self[key], Config)
+                        else parsed
+                    }
+                )
+
+        # Merge in values of keyword arguments
+        for k, v in kwargs.items():
+            keyval_dict = keyval_to_dict(k, v)
+            self.merge(keyval_dict)
 
     def _parse(self, value: Any):
         # If value is another Mapping: dict, Config, etc.
@@ -152,7 +145,7 @@ class Config(defaultdict):
                     # Can't do isinstance(c, collections.Mapping) because
                     # config that needs this method is not a Mapping subclass
                     is_dict = hasattr(c[k], "keys")
-                except KeyError: # pragma: no cover
+                except KeyError:  # pragma: no cover
                     is_dict = False
 
                 if limit and len(rows) >= limit:
