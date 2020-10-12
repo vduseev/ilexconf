@@ -1,10 +1,18 @@
 # Python
 __pycache__
 dist
+
+## Python tests
 .pytest_cache
 .mypy_cache
 .coverage
 **/*,cover
 
+# Sphinx documentation
+docs/_build
+
 # VS Code
 .vscode
+
+# macOS
+.DS_Store

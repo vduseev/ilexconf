@@ -1,0 +1,65 @@
+name: Build docs
+
+on:
+  push:
+    branches:
+      - master
+
+jobs:
+  build-docs:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+      - name: Set up Python 3.8
+        uses: actions/setup-python@v2
+        with:
+          python-version: 3.8
+
+      - name: Install dependencies
+        run: |
+          # Install poetry package manager
+          pip install poetry
+
+          # Install dependencies with poetry
+          poetry install
+
+      - name: Build docs using Sphinx
+        run: |
+          make -C docs clean
+          make -C docs html
+        
+      - name: Copy built docs to temporary location
+        run: |
+          tmpdir=$(mktemp -d)
+          rsync -av "docs/_build/html/" "${tmpdir}/"
+
+      - name: Push docs to gh-pages branch
+        run: |
+          # Change git username
+          git config --global user.name "${GITHUB_ACTOR}"
+          git config --global user.email "${GITHUB_ACTOR}@users.noreply.github.com"
+
+          # Init empty repo in tmp directory
+          cd "${tmpdir}"
+          git init
+          git remote add deploy "https://token:${{ secrets.GITHUB_TOKEN }}@github.com/${GITHUB_REPOSITORY}.git"
+          git checkout -b gh-pages
+
+          # Prevents contents of the branch from being build as Jekyll sources
+          touch .nojekyll
+
+          # Add README disclaimer
+          cat > README.md <<EOF
+          # GitHub Pages for `ilexconf`
+
+          The contents of this branch are built using GitHub Actions workflow and Sphinx.
+          
+          See built docs on: [ilexconf.com](https://ilexconf.com)
+          EOF
+
+          # Push everything to GitHub's remote branch
+          git add .
+          git commit -m "📝 Rebuilt docs for commit ${GITHUB_SHA:0:6}"
+          git push deploy gh-pages --force
+
+

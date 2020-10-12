@@ -39,6 +39,8 @@ flake8-import-order = "^0.18.1"
 pydocstyle = "^5.1.1"
 pytest-mock = "^3.3.1"
 pytest-mypy = "^0.7.0"
+Sphinx = "^3.2.1"
+sphinx-material = {git = "https://github.com/bashtage/sphinx-material.git"}
 
 [build-system]
 requires = ["poetry-core>=1.0.0a5"]

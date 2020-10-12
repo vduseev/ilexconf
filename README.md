@@ -1,4 +1,4 @@
-![ilexconf](https://raw.githubusercontent.com/vduseev/ilexconf/master/docs/img/logo.png)
+<a href="https://ilexconf.com"><img alt="ilexconf" src="https://raw.githubusercontent.com/ilexconf/ilexconf/master/docs/_static/github-logo.png"></a>
 
 <h2 align="center">Configuration Library 🔧 for Python</h2>
 
