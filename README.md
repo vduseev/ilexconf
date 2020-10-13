@@ -26,11 +26,11 @@
   * <a href="#quick_start_write">Save to file using `to_` functions</a>
   * <a href="#quick_start_subclass">Subclass `Config` to customize</a>
 * <a href="#internals">⚙️ Internals – How it Works</a>
-  * <a href="#internals_implementation">Subclassing `dict` and overriding</a>
+  * <a href="#internals_implementation">Subclassing `dict` and overriding methods</a>
   * <a href="#internals_documentation">Building and hosting docs</a>
 
 <a id="quick_start"></a>
-## Quick Start
+## 🚀 Quick Start
 
 <a id="quick_start_install"></a>
 ### Install
@@ -260,7 +260,7 @@ assert config.Horizon == "Up"
 ```
 
 <a id="internals"></a>
-## Internals
+## ⚙️ Internals
 
 <a id="internals_implementation"></a>
 ### Implementation

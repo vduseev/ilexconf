@@ -64,7 +64,7 @@ class Config(defaultdict):
                 self.update(
                     {
                         key: Config(self[key], parsed)
-                        if key in self and isinstance(self[key], Config)
+                        if key in self and isinstance(self[key], Config) and isinstance(parsed, Config)
                         else parsed
                     }
                 )
