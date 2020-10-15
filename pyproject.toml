@@ -42,6 +42,9 @@ pytest-mypy = "^0.7.0"
 Sphinx = "^3.2.1"
 sphinx-material = {git = "https://github.com/bashtage/sphinx-material.git"}
 
+[tool.poetry.scripts]
+ilexconf = "ilexconf.console:main"
+
 [build-system]
 requires = ["poetry-core>=1.0.0a5"]
 build-backend = "poetry.core.masonry.api"
