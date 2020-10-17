@@ -5,8 +5,8 @@ def keyval_to_dict(key, value, prefix="", separator="__", lowercase=False) -> Di
     """    Transform key-value into Mapping.    """
 
     if prefix and not key.startswith(prefix):
-            # if prefix is specified, then return nothing for keys without it
-            return {}
+        # if prefix is specified, then return nothing for keys without it
+        return {}
 
     # strip key off of prefix
     prefixless_key = key[len(prefix) :]

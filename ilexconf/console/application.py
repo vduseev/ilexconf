@@ -3,27 +3,26 @@ try:
 except ImportError:
     cleo = None
 
+if cleo:
+    from ilexconf.console.commands.config import ConfigCommand
 
-class Application:
-    def __init__(self):
-        if cleo is not None:
-            self.application = cleo.Application()
-            # Add commands here
-        else:
-            self.application = None
+    class Application:
+        def __init__(self):
+            self._app = cleo.Application(name="ilexconf", version="0.6")
+            self._app.add(ConfigCommand())
 
-    def run(self):
-        if cleo is not None:
-            self.application.run()
-        else:
-            print((
-                "CLI application is not supported in ilexconf\n"
-                "when 'console' extra is not installed.\n"
-                "Install the console with\n"
-                "    pip install ilexconf[console]\n"
-                "or for development\n"
-                "    poetry install -E console;'"
-            ))
+        def run(self):
+            self._app.run()
+
+else:
+    import argparse
+
+    class Application:
+        def __init__(self):
+            self._parser = argparse.ArgumentParser()
+
+        def run(self):
+            self._parser.parse_args()
 
 
 if __name__ == "__main__":

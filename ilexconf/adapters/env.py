@@ -23,14 +23,18 @@ def from_env(prefix="", separator="__", lowercase=False):
 
     for k, v in os.environ.items():
         # Convert current key-value pair to Mapping
-        d = keyval_to_dict(k, v, prefix=prefix, separator=separator, lowercase=lowercase)
+        d = keyval_to_dict(
+            k, v, prefix=prefix, separator=separator, lowercase=lowercase
+        )
         # Merge this Mapping into config
         config.merge(d)
 
     return config
 
 
-def to_env(data: Mapping[Any, Any], prefix="", separator="__", uppercase=False, lowercase=False):
+def to_env(
+    data: Mapping[Any, Any], prefix="", separator="__", uppercase=False, lowercase=False
+):
     """Export mapping to environment variables.
 
     This will set the environment variable both for current python
