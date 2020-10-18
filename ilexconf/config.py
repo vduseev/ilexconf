@@ -71,9 +71,8 @@ class Config(defaultdict):
             self.merge(keyval_dict)
 
     def flatten(self, prefix="", separator="."):
-        """
-        Flatten Config object to dictionary with depth 1.
-        """
+        """Flatten current config so that there is no hierarchy."""
+
         d = dict()
         p = f"{prefix}{separator}" if prefix else ""
         for key in self.keys():
@@ -82,31 +81,56 @@ class Config(defaultdict):
                 d.update(flattened)
             else:
                 d[f"{p}{key}"] = self[key]
-        return d
+        return Config(d)
+
+    def lower(self):
+        """Lowercase all string keys of the configuration"""
+
+        return Config(self.as_dict(lowercase=True))
+
+    def upper(self):
+        """Uppercase all string keys of the configuration"""
+
+        return Config(self.as_dict(uppercase=True))
 
     def copy(self):
-        """
-        Return deep copy of the Config object.
-        """
+        """Return deep copy of the Config object."""
+
         return Config(self.as_dict())
 
-    def as_dict(self):
+    def as_dict(self, lowercase: bool = False, uppercase: bool = False):
+        """Convert configuration to dict object.
+
+        `lowercase` takes precedence over `uppercase`.
+        """
+
         d = dict()
         for key in self.keys():
+            assignment_key = (
+                key.lower()
+                if lowercase and isinstance(key, str)
+                else key.upper()
+                if uppercase and isinstance(key, str)
+                else key
+            )
             if isinstance(self[key], Config):
-                d[key] = self[key].as_dict()
+                d[assignment_key] = self[key].as_dict(
+                    lowercase=lowercase, uppercase=uppercase
+                )
             else:
-                d[key] = self[key]
+                d[assignment_key] = self[key]
         return d
 
     def as_table(
         self,
-        headers: List[str] = ["Setting", "Value"],
+        headers: List[str] = ["Key", "Value"],
         indentation: str = "  ",
         limit: int = 0,
     ):
-        """
-        Transform multilevel dictionary into table structure suitable for printing by Cleo library.
+        """Transform configuration into table structure.
+
+        Returns tuple of headers and rows.
+        Returned structure is suitable for printing by Cleo library.
         """
 
         def processor(c: Dict, rows: List, level: int):

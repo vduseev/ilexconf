@@ -15,4 +15,4 @@ formats.json.extensions = ["json"]
 formats.yaml.enabled = False
 formats.yaml.extensions = ["yaml", "yml"]
 
-enabled_formats = [ f for f in formats if formats[f].enabled]
+enabled_formats = [f for f in formats if formats[f].enabled]

@@ -36,4 +36,3 @@ def to_json(data: Mapping[Any, Any], path: str = None, indent: int = 2):
             f.write(json_data)
 
     return json_data
-        

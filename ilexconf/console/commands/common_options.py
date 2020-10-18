@@ -72,6 +72,14 @@ lowercase = cleo_option(
 )
 _add_option(lowercase)
 
+uppercase = cleo_option(
+    long_name="uppercase",
+    description="Uppercase config keys",
+    flag=True,
+    value_required=False,
+)
+_add_option(uppercase)
+
 prefix = cleo_option(
     long_name="prefix",
     description="Prefix of the environment variables (default: '')",
@@ -85,7 +93,7 @@ separator = cleo_option(
     long_name="separator",
     description="Environment variable hierarchical delimiter (default: '__')",
     flag=False,
-    value_required=True
+    value_required=True,
 )
 _add_option(separator)
 

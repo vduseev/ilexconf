@@ -40,9 +40,10 @@ class ListCommand(Command):
         option("prefix"),
         option("separator"),
         option("lowercase"),
-        #option("user"),
-        #option("system"),
-        #option("tree")
+        option("uppercase"),
+        # option("user"),
+        # option("system"),
+        # option("tree")
     ]
 
     aliases = ["show", "print", "describe"]
@@ -78,7 +79,7 @@ class ListCommand(Command):
         if self.option("env"):
             prefixes = self.option("prefix") or [""]
             for prefix in prefixes:
-                params = { "prefix": prefix }
+                params = {"prefix": prefix}
                 if self.option("separator"):
                     params["separator"] = self.option("separator")
 
@@ -93,6 +94,12 @@ class ListCommand(Command):
         if self.option("flatten"):
             config = config.flatten()
 
+        if self.option("uppercase"):
+            config = config.upper()
+
+        if self.option("lowercase"):
+            config = config.lower()
+
         # Make sure we have a default writer
         writer = filetype.writer if filetype else to_json
 
@@ -103,7 +110,14 @@ class ListCommand(Command):
     def _guess_format_by_suffix(self, suffix: str):
         extension = suffix.strip(".")
         # Build inverted index that maps each extension -> format
-        extension_matching = { ext: formats[f] for f in formats for ext in formats[f].extensions if formats[f].enabled }
+        extension_matching = {
+            ext: formats[f]
+            for f in formats
+            for ext in formats[f].extensions
+            if formats[f].enabled
+        }
 
         # Guess file format using extension and inverted index
-        return extension_matching[extension] if extension in extension_matching else None
+        return (
+            extension_matching[extension] if extension in extension_matching else None
+        )
