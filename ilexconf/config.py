@@ -44,12 +44,6 @@ class Config(defaultdict):
         dict.__setitem__(self, attr, value)
 
     def __repr__(self):
-        # d = dict()
-        # for key in self.keys():
-        #     if isinstance(self[key], Config):
-        #         d[key] = self[key].__repr__()
-        #     else:
-        #         d[key] = str(self[key])
         return f"Config{dict.__repr__(self)}"
 
     def merge(self, *mappings: Mapping[Any, Any], **kwargs) -> None:
@@ -75,26 +69,6 @@ class Config(defaultdict):
         for k, v in kwargs.items():
             keyval_dict = keyval_to_dict(k, v)
             self.merge(keyval_dict)
-
-    def _parse(self, value: Any):
-        # If value is another Mapping: dict, Config, etc.
-        if isinstance(value, Mapping):
-            return Config(value)
-
-        # If value is a Sequence but not str, bytes, or bytearray
-        elif isinstance(value, Sequence) and not isinstance(
-            value, (str, bytes, bytearray)
-        ):
-            l = list()
-            for i in value:
-                l.append(self._parse(i))
-            # Return sequence with the same type
-            t = type(value)
-            return t(l)
-
-        # If value is anything else
-        else:
-            return value
 
     def flatten(self, prefix="", separator="."):
         """
@@ -178,3 +152,23 @@ class Config(defaultdict):
             rows.append(["...", "..."])
 
         return (headers, rows)
+
+    def _parse(self, value: Any):
+        # If value is another Mapping: dict, Config, etc.
+        if isinstance(value, Mapping):
+            return Config(value)
+
+        # If value is a Sequence but not str, bytes, or bytearray
+        elif isinstance(value, Sequence) and not isinstance(
+            value, (str, bytes, bytearray)
+        ):
+            l = list()
+            for i in value:
+                l.append(self._parse(i))
+            # Return sequence with the same type
+            t = type(value)
+            return t(l)
+
+        # If value is anything else
+        else:
+            return value

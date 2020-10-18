@@ -4,15 +4,23 @@ except ImportError:
     cleo = None
 
 if cleo:
-    from ilexconf.console.commands.config import ConfigCommand
+    from .commands.list import ListCommand
+
+    # from .commands.get import GetCommand
+    # from .commands.set import SetCommand
+    # from .commands.convert import ConvertCommand
 
     class Application:
         def __init__(self):
             self._app = cleo.Application(name="ilexconf", version="0.6")
-            self._app.add(ConfigCommand())
+            self._app.add(ListCommand())
 
         def run(self):
+            # import debugpy
+            # debugpy.listen(10001)
+            # debugpy.wait_for_client()
             self._app.run()
+
 
 else:
     import argparse

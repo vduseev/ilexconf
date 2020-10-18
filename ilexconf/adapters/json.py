@@ -21,11 +21,19 @@ def from_json(data: Union[str, TextIO], read_from_file: bool = True):
     return config
 
 
-def to_json(data: Mapping[Any, Any], path: str):
+def to_json(data: Mapping[Any, Any], path: str = None, indent: int = 2):
     """
-    Write data to JSON file.
+    Convert data to JSON and optionally write to file.
     """
     if isinstance(data, Config):
         data = data.as_dict()
-    with open(path, "w") as f:
-        json.dump(data, f, indent=2)
+
+    # Convert data to json
+    json_data = json.dumps(data, indent=indent)
+
+    if path:
+        with open(path, "w") as f:
+            f.write(json_data)
+
+    return json_data
+        

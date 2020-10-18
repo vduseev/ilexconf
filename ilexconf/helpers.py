@@ -17,10 +17,9 @@ def keyval_to_dict(key, value, prefix="", separator="__", lowercase=False) -> Di
     parts = key.strip(separator).split(separator, maxsplit=1) if separator else key
     if isinstance(parts, list) and len(parts) > 1:
         k, subkey = parts  # unpack split parts for readability
-        return {k: keyval_to_dict(subkey, value, prefix=prefix, separator=separator)}
+        return {k: keyval_to_dict(subkey, value, prefix="", separator=separator)}
     elif isinstance(parts, list) and len(parts) == 1:
         # Special case for Issue#21
         return {parts[0]: value}
     else:
-        print(f"fucking parts is {parts}")
         return {parts: value}

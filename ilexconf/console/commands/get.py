@@ -1,6 +1,6 @@
 from cleo import Command, argument, option
 
-from ilexconf.console.options import file, file_type, scopes
+from ilexconf.console.options import file_type, scopes
 
 
 class GetCommand(Command):
@@ -15,11 +15,7 @@ class GetCommand(Command):
         )
     ]
 
-    options = [
-        file,
-        file_type,
-        *scopes
-    ]
+    options = [file_type, *scopes]
 
     def handle(self):
         print("Here comes value")

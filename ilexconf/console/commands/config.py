@@ -1,9 +1,10 @@
 from cleo import Command
 
-from ilexconf.console.commands.show import ShowCommand
-from ilexconf.console.commands.get import GetCommand
-from ilexconf.console.commands.set import SetCommand
-from ilexconf.console.commands.convert import ConvertCommand
+from .list import ListCommand
+
+# from .get import GetCommand
+# from .set import SetCommand
+# from .convert import ConvertCommand
 
 
 class ConfigCommand(Command):
@@ -11,10 +12,10 @@ class ConfigCommand(Command):
     description = "Configuration command"
 
     commands = [
-        ShowCommand(),
-        GetCommand(),
-        SetCommand(),
-        ConvertCommand(),
+        ListCommand(),
+        # GetCommand(),
+        # SetCommand(),
+        # ConvertCommand(),
     ]
 
     def handle(self):
