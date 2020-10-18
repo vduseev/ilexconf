@@ -12,9 +12,10 @@
 
 `ilexconf` is a Python library to load and merge configs from multiple sources, access & change the values, and write them back, if needed. It has no dependencies by default but provides additional functions, relying on popular libraries to parse `yaml`, `toml`, provide `CLI` app, etc.
 
+📝 Full documentation at [ilexconf.com](https://ilexconf.com)
+
 ## Table of contents 
 
-* <a href="https://ilexconf.com">📝 Documentation at ilexconf.com</a>
 * <a href="#quick_start">🚀 Quick Start</a>
   * <a href="#quick_start_install">Installation</a>
   * <a href="#quick_start_create">Create `Config` object</a>
