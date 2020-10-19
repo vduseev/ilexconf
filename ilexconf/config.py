@@ -34,6 +34,7 @@ class Config(defaultdict):
         return dict.__getitem__(self, attr)
 
     def __setitem__(self, item, value):
+        value = self._parse(value)
         if isinstance(item, str) and "." in item:
             key, subkey = item.split(".", maxsplit=1)
             dict.__getitem__(self, key).__setitem__(subkey, value)
@@ -41,6 +42,7 @@ class Config(defaultdict):
             dict.__setitem__(self, item, value)
 
     def __setattr__(self, attr, value):
+        value = self._parse(value)
         dict.__setitem__(self, attr, value)
 
     def __repr__(self):

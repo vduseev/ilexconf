@@ -1,7 +1,5 @@
 from ilexconf import Config
 
-# from ilexconf.tests.debug import debug
-
 import json
 import pytest
 
@@ -85,16 +83,73 @@ def test_setitem():
     assert cfg["a1"]["b1"]["c1"] == 6
     assert cfg.a1.b1.c1 == 6
 
-    empty_cfg = Config()
-    empty_cfg["f1"] = False
-    assert empty_cfg["f1"] is False
-    empty_cfg["f2"]["g3"]["h3"] = 123
-    assert empty_cfg["f2.g3.h3"] == 123
-    empty_cfg["u1.u4.u6"] = True
-    assert empty_cfg["u1"]["u4"]["u6"] is True
+    cfg = Config()
+    cfg["f1"] = False
+    assert cfg["f1"] is False
+
+    from .debug import debug
+    debug()
+    cfg["f2"]["g3"]["h3"] = 123
+    assert cfg["f2.g3.h3"] == 123
+
+    cfg["u1.u4.u6"] = True
+    assert cfg["u1"]["u4"]["u6"] is True
 
 
 def test_setattr():
     cfg = Config(NESTED, MERGABLE)
     cfg.a1.b1.c1 = 8
     assert cfg.a1.b1.c1 == 8
+
+
+def test_simple_as_table(settings_json_dict):
+    config = Config(settings_json_dict)
+    headers, rows = config.as_table()
+
+    assert headers == ["Key", "Value"]
+    assert rows == [
+        ["database", ""],
+        ["  connection", ""],
+        ["    host", "localhost"],
+        ["    port", "5432"],
+    ]
+
+
+def test_limit_as_table(settings_json_dict):
+    config = Config(settings_json_dict)
+    headers, rows = config.as_table(limit=3)
+
+    assert rows == [
+        ["database", ""],
+        ["  connection", ""],
+        ["    host", "localhost"],
+        ["...", "..."],
+    ]
+
+
+def test_simple_flatten(settings_json_dict):
+    config = Config(settings_json_dict)
+
+    flat = config.flatten()
+    assert flat == {
+        "database.connection.host": "localhost",
+        "database.connection.port": 5432,
+    }
+
+
+def test_list_flatten():
+    # TODO: implement
+    pass
+
+
+def test_copy(settings_json_dict):
+    config = Config(settings_json_dict)
+
+    copy = config.copy()
+
+    # Change value in initial object and check it
+    config.database.connection.host = "1.2.3.4"
+    assert config.database.connection.host == "1.2.3.4"
+
+    # Make sure value in copied object has not changed
+    assert copy.database.connection.host == "localhost"
