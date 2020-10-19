@@ -5,7 +5,7 @@ from ilexconf.helpers import keyval_to_dict
 from typing import Any, Dict, Mapping, List, Sequence
 
 
-class Config(defaultdict):
+class Config(dict):
     """
     Config is a dictionary of other configs forming hierarchical structure.
     """
@@ -18,7 +18,8 @@ class Config(defaultdict):
         # Initialize super class as defaultdict with None value for
         # nonexisting keys, so that None is returned instead of throwing
         # KeyError exection.
-        super().__init__(*(lambda: Config(),))
+        #super().__init__(*(lambda: Config(),))
+        super().__init__()
 
         # Merge in values of mappings
         self.merge(*mappings, **kwargs)
@@ -26,18 +27,18 @@ class Config(defaultdict):
     def __getitem__(self, item):
         if isinstance(item, str) and "." in item:
             key, subkey = item.split(".", maxsplit=1)
-            return dict.__getitem__(self, key).__getitem__(subkey)
+            return self._dd_getitem(key).__getitem__(subkey)
         else:
-            return dict.__getitem__(self, item)
+            return self._dd_getitem(item)
 
     def __getattr__(self, attr):
-        return dict.__getitem__(self, attr)
+        return self._dd_getitem(attr)
 
     def __setitem__(self, item, value):
         value = self._parse(value)
         if isinstance(item, str) and "." in item:
             key, subkey = item.split(".", maxsplit=1)
-            dict.__getitem__(self, key).__setitem__(subkey, value)
+            self._dd_getitem(key).__setitem__(subkey, value)
         else:
             dict.__setitem__(self, item, value)
 
@@ -198,3 +199,12 @@ class Config(defaultdict):
         # If value is anything else
         else:
             return value
+
+    def _dd_getitem(self, item):
+        """Implements defaultdict feature
+        
+        DefaultDict getitem method
+        """
+        if item not in self:
+            dict.__setitem__(self, item, Config())
+        return dict.__getitem__(self, item)

@@ -87,8 +87,8 @@ def test_setitem():
     cfg["f1"] = False
     assert cfg["f1"] is False
 
-    from .debug import debug
-    debug()
+    #from .debug import debug
+    #debug()
     cfg["f2"]["g3"]["h3"] = 123
     assert cfg["f2.g3.h3"] == 123
 
