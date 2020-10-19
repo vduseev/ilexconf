@@ -87,8 +87,8 @@ def test_setitem():
     cfg["f1"] = False
     assert cfg["f1"] is False
 
-    #from .debug import debug
-    #debug()
+    # from .debug import debug
+    # debug()
     cfg["f2"]["g3"]["h3"] = 123
     assert cfg["f2.g3.h3"] == 123
 
@@ -100,6 +100,42 @@ def test_setattr():
     cfg = Config(NESTED, MERGABLE)
     cfg.a1.b1.c1 = 8
     assert cfg.a1.b1.c1 == 8
+
+
+def test_setattr_dict():
+    d = {"b": True, "c": {"d": "thename"}}
+    cfg = Config()
+
+    # Assign dict to the key. It should atuomatically
+    # get transformed into the Config object.
+    cfg.a = d
+    assert cfg.a.as_dict() == d
+    assert cfg.a == Config(d)
+
+    # Notice how the dict got transformed into a Config
+    # during assignment so that now we have all the "nice"
+    # accessibility features of Config.
+    assert cfg.a.c.d == "thename"
+
+
+def test_setattr_list_with_dict():
+    l = [{"b": True, "c": {"d": "thename"}}, "somestring", True]
+    cfg = Config()
+
+    # When we assign a list to the key
+    # it remains an instance of list, or
+    # whatever sequence type it was.
+    cfg.a = l
+    assert isinstance(cfg.a, list)
+
+    # Internally though any Mapping objects
+    # inside that list, no matter how nested,
+    # got transformed into the Config objects.
+    assert cfg.a == [Config({"b": True, "c": {"d": "thename"}}), "somestring", True]
+
+    # And, again, we get all the nice accessibility
+    # shenenigans as a result of such transformation.
+    assert cfg.a[0].c.d == "thename"
 
 
 def test_simple_as_table(settings_json_dict):

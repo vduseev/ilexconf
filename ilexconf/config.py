@@ -1,5 +1,3 @@
-from collections import defaultdict
-
 from ilexconf.helpers import keyval_to_dict
 
 from typing import Any, Dict, Mapping, List, Sequence
@@ -15,10 +13,6 @@ class Config(dict):
         Constructor.
         """
 
-        # Initialize super class as defaultdict with None value for
-        # nonexisting keys, so that None is returned instead of throwing
-        # KeyError exection.
-        #super().__init__(*(lambda: Config(),))
         super().__init__()
 
         # Merge in values of mappings
@@ -53,6 +47,7 @@ class Config(dict):
         """
         Merge values of mappings with current config recursively.
         """
+
         # For every key of that mapping
         for mapping in mappings:
             for key, value in mapping.items():
@@ -202,7 +197,7 @@ class Config(dict):
 
     def _dd_getitem(self, item):
         """Implements defaultdict feature
-        
+
         DefaultDict getitem method
         """
         if item not in self:
