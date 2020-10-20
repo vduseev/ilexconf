@@ -287,7 +287,7 @@ Contributions are welcome!
 
 ## Kudos
 
-`ilexconf` heavily borrows from `python-configuration` library and is inspired by it.
+`ilexconf` ideas are heavily borrowed from amazing [`python-configuration`](https://github.com/tr11/python-configuration) library by [Tiago Requeijo](https://github.com/tr11).
 
 ## License
 
