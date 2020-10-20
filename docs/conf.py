@@ -48,6 +48,11 @@ exclude_patterns = ["_build", "Thumbs.db", ".DS_Store"]
 #
 html_theme = "sphinx_material"
 html_logo = "_static/logo.png"
+html_favicon = "_static/logo.png"
+
+html_sidebars = {
+    "**": ["logo-text.html", "globaltoc.html", "localtoc.html", "searchbox.html"]
+}
 
 # Material theme options (see theme.conf for more information)
 html_theme_options = {
