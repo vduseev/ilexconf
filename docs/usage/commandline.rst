@@ -7,9 +7,9 @@ Command Line Application
 ilexconf
 ========
 
-.. program-output:: poetry run ilexconf --help
+.. program-output:: ilexconf --help
 
 list
 ----
 
-.. program-output:: poetry run ilexconf list --help
+.. program-output:: ilexconf list --help

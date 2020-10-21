@@ -138,6 +138,33 @@ def test_setattr_list_with_dict():
     assert cfg.a[0].c.d == "thename"
 
 
+def test_lower():
+    config = Config()
+
+    config.merge({ "SOME_KeY": "VALuE" })
+    assert config.SOME_KeY == "VALuE"
+    with pytest.raises(AssertionError):
+        assert config.some_key == "VALuE"
+
+    config.clear()
+    config.merge({ "SOME_KeY": "VALuE" })
+    config = config.lower()
+
+    assert config.some_key == "VALuE"
+    with pytest.raises(AssertionError):
+        assert config.SOME_KeY == "VALuE"
+
+
+def test_upper():
+    config = Config()
+
+    config.merge({"sOmE_kEy": True})
+    assert config.sOmE_kEy == True
+
+    config = config.upper()
+    assert config.SOME_KEY == True
+
+
 def test_simple_as_table(settings_json_dict):
     config = Config(settings_json_dict)
     headers, rows = config.as_table()

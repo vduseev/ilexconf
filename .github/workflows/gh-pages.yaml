@@ -21,7 +21,7 @@ jobs:
           pip install poetry
 
           # Install dependencies with poetry
-          poetry install
+          poetry install -E console -E yaml
 
       - name: Build docs and push them to gh-pages branch
         run: |
