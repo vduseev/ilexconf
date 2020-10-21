@@ -4,12 +4,12 @@ python:
 - 3.8
 
 before_install:
-- curl -sSL https://raw.githubusercontent.com/python-poetry/poetry/master/get-poetry.py > /tmp/get-poetry.py
-- python /tmp/get-poetry.py --preview --yes
+- travis_retry curl -sSL https://raw.githubusercontent.com/python-poetry/poetry/master/get-poetry.py > /tmp/get-poetry.py
+- travis_retry python /tmp/get-poetry.py --preview --yes
 - source $HOME/.poetry/env
 
 install:
-- poetry install -E yaml -E console
+- travis_retry poetry install -E yaml -E console
 
 script:
 - poetry run pytest --cov --cov-report=xml
@@ -20,4 +20,4 @@ after_success:
 # Bump version to x.x.BUILD_NUMBER
 - sed -i "s/\(version = \"[[:digit:]]\.[[:digit:]]\).*\"/\1.$TRAVIS_BUILD_NUMBER\"/" pyproject.toml
 # Publish package
-- poetry publish --build --username "$PYPI_USERNAME" --password "$PYPI_PASSWORD"
+- travis_retry poetry publish --build --username "$PYPI_USERNAME" --password "$PYPI_PASSWORD"
