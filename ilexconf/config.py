@@ -16,6 +16,7 @@ class Config(dict):
     """
     Config is a dictionary of other configs forming hierarchical structure.
     """
+
     # [class-declaration]
 
     def __init__(self, *mappings: Mapping[Any, Any], **kwargs: Dict):
@@ -35,11 +36,13 @@ class Config(dict):
             return self._dd_getitem(key).__getitem__(subkey)
         else:
             return self._dd_getitem(item)
+
     # [getitem-method]
 
     # [getattr-method]
     def __getattr__(self, attr):
         return self._dd_getitem(attr)
+
     # [getattr-method]
 
     # [setitem-method]
@@ -50,17 +53,20 @@ class Config(dict):
             self._dd_getitem(key).__setitem__(subkey, value)
         else:
             dict.__setitem__(self, item, value)
+
     # [setitem-method]
 
     # [setattr-method]
     def __setattr__(self, attr, value):
         value = self._parse(value)
         dict.__setitem__(self, attr, value)
+
     # [setattr-method]
 
     # [repr-method]
     def __repr__(self):
         return f"Config{dict.__repr__(self)}"
+
     # [repr-method]
 
     # [merge-method]
@@ -88,6 +94,7 @@ class Config(dict):
         for k, v in kwargs.items():
             keyval_dict = keyval_to_dict(k, v)
             self.merge(keyval_dict)
+
     # [merge-method]
 
     def flatten(self, prefix="", separator="."):
@@ -204,9 +211,7 @@ class Config(dict):
             return Config(value)
 
         # If value is a Sequence but not str, bytes, or bytearray
-        elif isinstance(value, Sequence) and not isinstance(
-            value, NOT_SEQUENCE_TYPES
-        ):
+        elif isinstance(value, Sequence) and not isinstance(value, NOT_SEQUENCE_TYPES):
             l = list()
             for i in value:
                 l.append(self._parse(i))
@@ -217,6 +222,7 @@ class Config(dict):
         # If value is anything else
         else:
             return value
+
     # [parse-method]
 
     # [dd-getitem-method]
@@ -228,5 +234,8 @@ class Config(dict):
         if item not in self:
             dict.__setitem__(self, item, Config())
         return dict.__getitem__(self, item)
+
     # [dd-getitem-method]
+
+
 # [class-definition]

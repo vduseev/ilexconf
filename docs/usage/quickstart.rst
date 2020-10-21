@@ -1,7 +1,3 @@
-===========
-Quick start
-===========
-
 The steps below describe how to create, modify, save, merge, subclass Configs and much more.
 Similarly to many other parts of this documentation Quick Start section is generated out of actual unit tests that cover the functionality described below.
 

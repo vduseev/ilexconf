@@ -22,18 +22,77 @@ to parse `yaml`, `toml`, provide command line app, etc.
 Features
 --------
 
-* Assign to non-existent keys
-* Correctly merges lists
+-  Create empty config
+
+   .. literalinclude:: ../ilexconf/tests/test_index.py
+      :language: python
+      :lines: 5-6
+      :dedent: 4
+
+-  Assign to non-existent keys 
+
+   .. literalinclude:: ../ilexconf/tests/test_index.py
+      :language: python
+      :lines: 8
+      :dedent: 4
+
+-  Access values however you want
+
+   .. literalinclude:: ../ilexconf/tests/test_index.py
+      :language: python
+      :lines: 11,14,17,20,23,26
+      :dedent: 8
+
+-  Correctly merge lists
+
+   .. literalinclude:: ../ilexconf/tests/test_index.py
+      :language: python
+      :lines: 30-33,36,39,42
+      :dedent: 8
+
+-  Support ``json``, ``ini``, ``yaml``, ``toml``, ``python modules``
+
+   .. code:: python
+
+      config = from_json("settings.json")
+      config = from_python("settings.py")
+
+-  Correctly merge configs 
+
+-  Support environment variables
+
+-  Support command line arguments as configuration 
+
+-  Rich :ref:`command line application`
+
+   .. code:: shell
+
+      # Show config variables
+      ilexconf list config.json 
+
+      # Set variable
+      ilexconf set my_config.json my.key my_value
+
+.. note:: Every single example on this page is `unit tested <https://github.com/ilexconf/ilexconf/blob/master/ilexconf/tests/test_index.py>`_.
 
 Table of Contents
 -----------------
 
 .. toctree::
+   :caption: Quick Start
+
+   usage/quickstart
+
+.. toctree::
+   :caption: Installation
+
+   usage/installation
+
+.. toctree::
    :caption: Usage
    :maxdepth: 1
 
-   usage/installation
-   usage/quickstart
+   usage/commandline
 
 
 .. toctree::
