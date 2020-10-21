@@ -3,10 +3,21 @@ from ilexconf.helpers import keyval_to_dict
 from typing import Any, Dict, Mapping, List, Sequence
 
 
+# [not-sequence-types]
+# These python types are not considered to be Sequences in ilexconf,
+# even though, technically, they are Sequences in Python.
+NOT_SEQUENCE_TYPES = (str, bytes, bytearray)
+# [not-sequence-types]
+
+
+# [class-definition]
+# [class-declaration]
 class Config(dict):
     """
     Config is a dictionary of other configs forming hierarchical structure.
     """
+
+    # [class-declaration]
 
     def __init__(self, *mappings: Mapping[Any, Any], **kwargs: Dict):
         """
@@ -18,6 +29,7 @@ class Config(dict):
         # Merge in values of mappings
         self.merge(*mappings, **kwargs)
 
+    # [getitem-method]
     def __getitem__(self, item):
         if isinstance(item, str) and "." in item:
             key, subkey = item.split(".", maxsplit=1)
@@ -25,9 +37,15 @@ class Config(dict):
         else:
             return self._dd_getitem(item)
 
+    # [getitem-method]
+
+    # [getattr-method]
     def __getattr__(self, attr):
         return self._dd_getitem(attr)
 
+    # [getattr-method]
+
+    # [setitem-method]
     def __setitem__(self, item, value):
         value = self._parse(value)
         if isinstance(item, str) and "." in item:
@@ -36,13 +54,22 @@ class Config(dict):
         else:
             dict.__setitem__(self, item, value)
 
+    # [setitem-method]
+
+    # [setattr-method]
     def __setattr__(self, attr, value):
         value = self._parse(value)
         dict.__setitem__(self, attr, value)
 
+    # [setattr-method]
+
+    # [repr-method]
     def __repr__(self):
         return f"Config{dict.__repr__(self)}"
 
+    # [repr-method]
+
+    # [merge-method]
     def merge(self, *mappings: Mapping[Any, Any], **kwargs) -> None:
         """
         Merge values of mappings with current config recursively.
@@ -67,6 +94,8 @@ class Config(dict):
         for k, v in kwargs.items():
             keyval_dict = keyval_to_dict(k, v)
             self.merge(keyval_dict)
+
+    # [merge-method]
 
     def flatten(self, prefix="", separator="."):
         """Flatten current config so that there is no hierarchy."""
@@ -175,15 +204,14 @@ class Config(dict):
 
         return (headers, rows)
 
+    # [parse-method]
     def _parse(self, value: Any):
         # If value is another Mapping: dict, Config, etc.
         if isinstance(value, Mapping):
             return Config(value)
 
         # If value is a Sequence but not str, bytes, or bytearray
-        elif isinstance(value, Sequence) and not isinstance(
-            value, (str, bytes, bytearray)
-        ):
+        elif isinstance(value, Sequence) and not isinstance(value, NOT_SEQUENCE_TYPES):
             l = list()
             for i in value:
                 l.append(self._parse(i))
@@ -195,6 +223,9 @@ class Config(dict):
         else:
             return value
 
+    # [parse-method]
+
+    # [dd-getitem-method]
     def _dd_getitem(self, item):
         """Implements defaultdict feature
 
@@ -203,3 +234,8 @@ class Config(dict):
         if item not in self:
             dict.__setitem__(self, item, Config())
         return dict.__getitem__(self, item)
+
+    # [dd-getitem-method]
+
+
+# [class-definition]

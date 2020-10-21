@@ -41,9 +41,13 @@ pytest-mock = "^3.3.1"
 pytest-mypy = "^0.7.0"
 Sphinx = "^3.2.1"
 sphinx-material = "^0.0.32"
+sphinxcontrib-programoutput = "^0.16"
 
 [tool.poetry.scripts]
 ilexconf = "ilexconf.console:main"
+
+[tool.black]
+exclude = 'test_index.py'
 
 [build-system]
 requires = ["poetry-core>=1.0.0a5"]
