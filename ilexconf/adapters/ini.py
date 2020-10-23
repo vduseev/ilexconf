@@ -1,24 +1,34 @@
-import configparser
+from configparser import ConfigParser
+from pathlib import Path
+from typing import TextIO, Union
 
-from typing import Union, TextIO
+from .decorators import reader, writer
 
 
-def from_ini(
-    data: Union[str, TextIO], read_from_file: bool = False, lowercase_keys: bool = False
-):
-    """
-    Read data from INI file or INI string.
-    """
-    if read_from_file:
-        if isinstance(data, str):
-            data = open(data, "rt").read()
-        else:
-            data = data.read()
-    data = str(data)
-    cfg = configparser.RawConfigParser()
-    cfg.read_string(data)
-    result = {
-        section + "." + k: v
-        for section, values in cfg.items()
-        for k, v in values.items()
-    }
+def _file_loader(data: Union[TextIO, Path]):
+    parser = ConfigParser()
+    return parser.read([data])
+
+
+def _string_loader(data: str):
+    parser = ConfigParser()
+    return parser.read_string(data)
+
+
+@reader(
+    file_load=_file_loader,
+    path_load=_file_loader,
+    string_load=_string_loader,
+    post_processing=lambda data: { section + "." + k: v for section, values in data.items() for k, v in values.items() }
+)
+def from_ini():
+    """Read data from INI string, file object or path"""
+    pass  # pragma: no cover
+
+
+@writer(
+    string_dump=None
+)
+def to_ini():
+    """Write data to INI file or convert to YAML string"""
+    pass  # pragma: no cover

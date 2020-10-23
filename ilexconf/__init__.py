@@ -1,2 +1,11 @@
 from ilexconf.config import Config
-from ilexconf.adapters import from_json, from_ini, from_env, to_json, to_env
+from ilexconf.adapters import (
+    from_json,
+    to_json,
+    from_ini,
+    to_ini,
+    from_env,
+    to_env,
+    from_yaml,
+    to_yaml
+)
