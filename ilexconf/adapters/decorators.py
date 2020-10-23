@@ -1,15 +1,52 @@
 from functools import wraps
 from pathlib import Path
+from enum import Enum, auto
+from io import IOBase
 
 from ilexconf.config import Config
-from ilexconf.helpers import DataSource, DataDestination
 from ilexconf.exceptions import UnsupportedDataSourceType, UnsupportedDataDestinationType
 
 from typing import Union, TextIO, Mapping, Any
-from io import IOBase
 
 
-def reader(file_load=None, path_load=None, string_load=None, post_processing=lambda d: d):
+class DataSource(Enum):
+    STRING = auto()
+    FILE = auto()
+    PATH = auto()
+
+    @staticmethod
+    def determine(data: Union[str, IOBase, Path]):
+        if isinstance(data, Path):
+            return DataSource.PATH
+        elif isinstance(data, IOBase):
+            return DataSource.FILE
+        elif isinstance(data, str):
+            return DataSource.STRING
+        else:
+            raise UnsupportedDataSourceType(data)
+
+
+class DataDestination(Enum):
+    PATH = auto()
+    STRING_PATH = auto()
+    STREAM = auto()
+    STRING = auto()
+
+    @staticmethod
+    def determine(data: Union[Path, str, IOBase]):
+        if isinstance(data, Path):
+            return DataDestination.PATH
+        elif isinstance(data, IOBase):
+            return DataDestination.STREAM
+        elif isinstance(data, str):
+            return DataDestination.STRING_PATH
+        elif data is None:
+            return DataDestination.STRING
+        else:
+            raise UnsupportedDataDestinationType(data)
+
+
+def reader(file_load=None, path_load=None, string_load=None, pre_processing=lambda d: d):
 
     def decorator_reader(func):
     
@@ -27,11 +64,8 @@ def reader(file_load=None, path_load=None, string_load=None, post_processing=lam
             elif source is DataSource.STRING:
                 d = string_load(data)
 
-            else:
-                raise UnsupportedDataSourceType()
-
-            # Perform any postprocessing necessary
-            d = post_processing(d)
+            # Perform any pre processing necessary
+            d = pre_processing(d)
 
             config = Config.parse(d)
             return config
@@ -41,21 +75,21 @@ def reader(file_load=None, path_load=None, string_load=None, post_processing=lam
     return decorator_reader
 
 
-def writer(string_dump=None):
+def writer(dump=None, **kwargs):
 
     def decorator_writer(func):
 
         @wraps(func)
-        def wrapper_writer(data: Mapping[Any, Any], destination: Union[str, Path, IOBase] = None, **kwargs):
+        def wrapper_writer(data: Mapping[Any, Any], destination: Union[str, Path, IOBase] = None, **given_kwargs):
             if isinstance(data, Config):
                 data = data.as_dict()
 
-            # Convert mapping to string
-            s = string_dump(data)
+            # Merge kwargs passed as argument to adapter on top of
+            # default kwargs
+            kwargs.update(given_kwargs)
 
-            # Without destination specified just return the string
-            if destination is None:
-                return s
+            # Convert mapping to string
+            s = dump(data, **kwargs)
 
             dest = DataDestination.determine(destination) 
             if dest is DataDestination.PATH:
@@ -69,8 +103,10 @@ def writer(string_dump=None):
             elif dest is DataDestination.STREAM:
                 destination.write(s)
 
-            else:
-                raise UnsupportedDataDestinationType()
+            elif dest is DataDestination.STRING:
+                return s
+
+            return s
 
         return wrapper_writer
 
