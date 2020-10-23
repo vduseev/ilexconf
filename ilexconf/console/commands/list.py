@@ -105,7 +105,7 @@ class ListCommand(Command):
 
         # Print results using the writer
         output = writer(config)
-        print(output)
+        self.line(output)
 
     def _guess_format_by_suffix(self, suffix: str):
         extension = suffix.strip(".")

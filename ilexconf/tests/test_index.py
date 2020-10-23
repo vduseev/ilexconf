@@ -1,7 +1,7 @@
 import pytest
 
 
-def test_index():
+def test_features():
     from ilexconf import Config
     config = Config()
 

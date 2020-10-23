@@ -1,5 +1,5 @@
 from ilexconf.console.application import Application
 
 
-def main():
+def main():  # pragma: no cover
     return Application().run()

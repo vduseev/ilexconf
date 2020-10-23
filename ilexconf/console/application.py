@@ -22,7 +22,7 @@ if cleo:
             self._app.run()
 
 
-else:
+else:  # pragma: no cover
     import argparse
 
     class Application:
