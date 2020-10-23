@@ -32,11 +32,6 @@ Being a dictionary
 
 Under the hood ``ilexconf`` is implemented as subclass of ``dict``. 
 
-.. literalinclude:: ../../ilexconf/config.py
-   :language: python
-   :start-after: [class-declaration]
-   :end-before: [class-declaration]
-
 It mostly behaves just like a ``dict``. For example, it inherits the ``.clear()`` method from *dict*.
 Some aspects, however, are not that familiar. For instance, you can assign a value to a key that does
 not exist yet, and the key will be created and assigned a value (even if it's a nested key).
@@ -66,33 +61,25 @@ The essence of the library is in this overridden methods of ``dict`` class.
 ``__getitem__``
 
 .. literalinclude:: ../../ilexconf/config.py
-   :language: python
-   :start-after: [getitem-method]
-   :end-before: [getitem-method]
+   :pyobject: Config.__getitem__
 
 
 ``__getattr__``
 
 .. literalinclude:: ../../ilexconf/config.py
-   :language: python
-   :start-after: [getattr-method]
-   :end-before: [getattr-method]
+   :pyobject: Config.__getattr__
 
 
 ``__setitem__``
 
 .. literalinclude:: ../../ilexconf/config.py
-   :language: python
-   :start-after: [setitem-method]
-   :end-before: [setitem-method]
+   :pyobject: Config.__setitem__
 
 
 ``__setattr__``
 
 .. literalinclude:: ../../ilexconf/config.py
-   :language: python
-   :start-after: [setattr-method]
-   :end-before: [setattr-method]
+   :pyobject: Config.__setattr__
 
 They rely on the ``_dd_getitem`` method that implements the ``defaultdict`` functionality 
 without actually subclassing it (see `Issue #6 <https://github.com/ilexconf/ilexconf/issues/6>`_ to understand why such approach was taken). 
@@ -100,6 +87,4 @@ without actually subclassing it (see `Issue #6 <https://github.com/ilexconf/ilex
 ``_dd_getitem``
 
 .. literalinclude:: ../../ilexconf/config.py
-   :language: python
-   :start-after: [dd-getitem-method]
-   :end-before: [dd-getitem-method]
+   :pyobject: Config._dd_getitem

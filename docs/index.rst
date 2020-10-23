@@ -80,24 +80,26 @@ Table of Contents
 
 .. toctree::
    :caption: Quick Start
+   :titlesonly:
 
    usage/quickstart
 
 .. toctree::
    :caption: Installation
+   :titlesonly:
 
    usage/installation
 
 .. toctree::
    :caption: Usage
-   :maxdepth: 1
+   :titlesonly:
 
    usage/commandline
 
 
 .. toctree::
    :caption: Internals
-   :maxdepth: 1
+   :titlesonly:
 
    internals/development
    internals/implementation
