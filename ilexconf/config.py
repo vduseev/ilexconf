@@ -11,15 +11,50 @@ NOT_SEQUENCE_TYPES = (str, bytes, bytearray)
 
 
 class Config(dict):
-    """
-    Config is a dictionary of other configs forming hierarchical structure.
+    """Config is a dictionary compatible object.
+
+    **Why Config?** Config provides *convenient* methods to work with mappings. It allows 
+    addressing the keys via attributes and correctly merges multiple mappings
+    within one object.
+
+    **Goal.** The main purpose of the Config is to simplify the process of working
+    with multiple mappings by combining them within one object and adding
+    convenience methods to access values, create them, change them, or dump
+    them to files.
+    
+    **How it works.** Config inherits ``dict`` class, but behaves like a ``defaultdict``. When
+    a key that does not exist in the Config is accessed then an empty Config
+    value is created in its place. Config overrides ``dict`` methods to implement
+    its convenient flow.
+
+    Args:
+        *mappings (Mapping): Mapping-like objects that will be used to
+            initialize Config object.
+        **kwargs: Keyword arguments that will be used to initialize Config
+            object. If the key contains ``__`` separator in its name then
+            the key will be split by it to form a hierarchical dictionary with
+            the value in it.
+
+    Examples:
+        Create empty Config object:
+
+        >>> config = Config()
+        Config{}
+
+        Create Config from dictionary:
+
+        >>> config = Config({ "name": "Boris" })
+        Config{'name': 'Boris'}
+
+        Create Config from keyword arguments:
+
+        >>> config = Config(database__host = "172.31.49.120")
+        Config{'database': Config{'host': '172.31.49.120'}}
+
+        
     """
 
     def __init__(self, *mappings: Mapping[Any, Any], **kwargs: Dict):
-        """
-        Constructor.
-        """
-
         super().__init__()
 
         # Merge in values of mappings
@@ -51,9 +86,7 @@ class Config(dict):
         return f"Config{dict.__repr__(self)}"
 
     def merge(self, *mappings: Mapping[Any, Any], **kwargs) -> None:
-        """
-        Merge values of mappings with current config recursively.
-        """
+        """Merge values of mappings with current config recursively."""
 
         # For every key of that mapping
         for mapping in mappings:
