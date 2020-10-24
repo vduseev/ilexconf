@@ -34,7 +34,7 @@ if yaml:
 
 
     @writer(
-        string_dump=lambda data: yaml.dump(data)
+        dump=lambda data: yaml.dump(data)
     )
     def to_yaml():
         """Write data to YAML file or convert to YAML string"""

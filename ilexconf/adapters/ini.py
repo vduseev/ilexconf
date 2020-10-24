@@ -19,7 +19,7 @@ def _string_loader(data: str):
     file_load=_file_loader,
     path_load=_file_loader,
     string_load=_string_loader,
-    post_processing=lambda data: { section + "." + k: v for section, values in data.items() for k, v in values.items() }
+    pre_processing=lambda data: { section + "." + k: v for section, values in data.items() for k, v in values.items() }
 )
 def from_ini():
     """Read data from INI string, file object or path"""
@@ -27,7 +27,7 @@ def from_ini():
 
 
 @writer(
-    string_dump=None
+    dump=None
 )
 def to_ini():
     """Write data to INI file or convert to YAML string"""
