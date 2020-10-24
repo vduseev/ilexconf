@@ -1,8 +1,8 @@
 .. _command line application:
 
-========================
-Command Line Application
-========================
+============
+Command Line
+============
 
 ilexconf
 ========

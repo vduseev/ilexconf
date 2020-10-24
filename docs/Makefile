@@ -16,9 +16,10 @@ help:
 clean:
 	rm -rf "$(BUILDDIR)"
 
-.PHONY: help clean Makefile
+.PHONY: help clean build rebuild Makefile
 
-# Catch-all target: route all unknown targets to Sphinx using the new
-# "make mode" option.  $(O) is meant as a shortcut for $(SPHINXOPTS).
-%: Makefile
-	@$(SPHINXBUILD) -M $@ "$(SOURCEDIR)" "$(BUILDDIR)" $(SPHINXOPTS) $(O)
+build: 
+	#@$(SPHINXBUILD) -M $@ "$(SOURCEDIR)" "$(BUILDDIR)" $(SPHINXOPTS)
+	@$(SPHINXBUILD) -M html "$(SOURCEDIR)" "$(BUILDDIR)"
+
+rebuild: clean build

@@ -10,9 +10,9 @@
 # add these directories to sys.path here. If the directory is relative to the
 # documentation root, use os.path.abspath to make it absolute, like shown here.
 #
-# import os
-# import sys
-# sys.path.insert(0, os.path.abspath('.'))
+import os
+import sys
+sys.path.insert(0, os.path.abspath('.'))
 
 
 # -- Project information -----------------------------------------------------
@@ -30,7 +30,13 @@ release = "0.6"
 # Add any Sphinx extension module names here, as strings. They can be
 # extensions coming with Sphinx (named 'sphinx.ext.*') or your custom
 # ones.
-extensions = ["sphinx.ext.autodoc", "sphinxcontrib.programoutput"]
+extensions = [
+    "sphinx.ext.autodoc",
+    "sphinx.ext.napoleon",
+    "sphinx.ext.viewcode",
+    "sphinx.ext.autosectionlabel",
+    "sphinxcontrib.programoutput"
+]
 
 # Add any paths that contain templates here, relative to this directory.
 templates_path = ["_templates"]
@@ -40,6 +46,18 @@ templates_path = ["_templates"]
 # This pattern also affects html_static_path and html_extra_path.
 exclude_patterns = ["_build", "Thumbs.db", ".DS_Store"]
 
+# True to prefix each section label with the name of the document it is in,
+# followed by a colon. For example, index:Introduction for a section called 
+# Introduction that appears in document index.rst. Useful for avoiding 
+# ambiguity when the same section heading appears in different documents.
+autosectionlabel_prefix_document = True
+
+# -- Autodoc -----------------------------------------------------------------
+
+autodoc_default_options = {
+    'member-order': 'bysource',
+    'undoc-members': True
+}
 
 # -- Options for HTML output -------------------------------------------------
 
