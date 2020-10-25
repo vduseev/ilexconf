@@ -28,7 +28,7 @@ jobs:
 
           # Build docs
           make -C docs clean
-          make -C docs html
+          make -C docs build
         
           # Copy built results to the temporary directory
           docsdir=$(mktemp -d)
