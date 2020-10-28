@@ -1,15 +1,26 @@
-from json import load, loads, dumps
+from json import loads, dumps
+from typing import Mapping, Any
 
-from .decorators import reader, writer
+from .common.decorators import reader, writer
 
 
-@reader(
-    file_load=lambda data: load(data),
-    path_load=lambda data: load(data.open("rt")),
-    string_load=lambda data: loads(data) if "{" in data and "}" in data else load(open(data, "rt"))
-)
+def _load_json(string) -> Mapping[str, Any]:
+    parsed = loads(string)
+    return parsed
+
+
+def _dump_json(data: Mapping[Any, Any], **kwargs) -> str:
+    dumped = dumps(data, **kwargs)
+    return dumped
+
+
+@reader(load=_load_json, str_resolver=lambda string: "{" not in string or "}" not in string)
 def from_json():
     """Read JSON from string, file or path.
+
+    JSON adapter relies on Python's 
+    `json <https://docs.python.org/3/library/json.html>`_ module when
+    working with ``.json`` files.
     
     Args:
         data: Source of JSON. Accepts file, path or string:
@@ -43,13 +54,13 @@ def from_json():
     """
     pass  # pragma: no cover
 
-
-@writer(
-    dump=lambda data, **kwargs: dumps(data, **kwargs),
-    indent=2
-)
+@writer(dump=_dump_json, indent=2)
 def to_json():
     """Write data to JSON file or convert to JSON string
+    
+    JSON adapter relies on Python's 
+    `json <https://docs.python.org/3/library/json.html>`_ module when
+    working with ``.json`` files.
     
     Args:
         data (Mapping): Mapping object to dump to JSON.

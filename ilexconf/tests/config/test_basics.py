@@ -61,6 +61,7 @@ def test_nested_merge():
     # "val" has replaced 3 as value for a1.b1.c3
     assert cfg.a1.b1.c3 == "val"
     # other values are still intact
+    print(cfg)
     assert cfg.a1.b2.c3 == 1.1
     assert cfg.a1.b1.c1 == 1
 
@@ -87,8 +88,6 @@ def test_setitem():
     cfg["f1"] = False
     assert cfg["f1"] is False
 
-    # from .debug import debug
-    # debug()
     cfg["f2"]["g3"]["h3"] = 123
     assert cfg["f2.g3.h3"] == 123
 
@@ -141,13 +140,13 @@ def test_setattr_list_with_dict():
 def test_lower():
     config = Config()
 
-    config.merge({ "SOME_KeY": "VALuE" })
+    config.merge({"SOME_KeY": "VALuE"})
     assert config.SOME_KeY == "VALuE"
     with pytest.raises(AssertionError):
         assert config.some_key == "VALuE"
 
     config.clear()
-    config.merge({ "SOME_KeY": "VALuE" })
+    config.merge({"SOME_KeY": "VALuE"})
     config = config.lower()
 
     assert config.some_key == "VALuE"

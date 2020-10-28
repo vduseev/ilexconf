@@ -14,17 +14,7 @@ def settings_json_dict():
 
 @pytest.fixture(scope="session", autouse=True)
 def settings_json_string():
-    return '{"database": {"connection": {"host": "localhost", "port": 5432}}}'
-    # return str(
-    #     '{'
-    #     '  "database": {'
-    #     '    "connection": {'
-    #     '      "host": "localhost"'
-    #     '      "port": 5432'
-    #     '    }'
-    #     '  }'
-    #     '}'
-    # )
+    return '{ "database": { "connection": { "host": "localhost", "port": 5432 } } }'
 
 
 @pytest.fixture(scope="session", autouse=True)

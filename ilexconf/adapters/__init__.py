@@ -7,7 +7,7 @@ from .json import from_json, to_json
 try:
     from .yaml import from_yaml, to_yaml
     yaml_here = True
-except ImportError:
+except ImportError:  # pragma: no cover
     yaml_here = False
     from_yaml = None
     to_yaml = None
@@ -25,7 +25,7 @@ formats.yaml = {
     "enabled": yaml_here,
     "extensions": ["yaml", "yml"]
 }
-if yaml_here:
+if yaml_here:  # pragma: no cover
     formats.yaml.reader = from_yaml
     formats.yaml.writer = to_yaml
 

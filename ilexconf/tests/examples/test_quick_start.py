@@ -175,9 +175,9 @@ def test_quick_start(
     # Temporary path
     p = tmp_path / "settings.json"
     # Save config
-    to_json(config, str(p))
+    to_json(config, p)
     # Verify written file is correct
-    assert from_json(str(p)).as_dict() == {
+    assert from_json(p).as_dict() == {
         "database": {
             "connection": {
                 "host": "test.local",

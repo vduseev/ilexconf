@@ -7,15 +7,18 @@ except ImportError:
     except ImportError:
         yaml = None
 
-from .decorators import reader, writer
+from .common.decorators import reader, writer
 
 
 if yaml:
-    def _string_loader(data: str):
+    def _load(data: str):
+        # If data is a string in a form of
+        # "name: boris" or "name:" then it will
+        # be parsed by yaml module to a str instance.
         d = yaml.load(data)
 
         # Do not accept plain string yaml files
-        # as configs. Treat such string as path.
+        # as configs. Treat such strings as paths.
         if isinstance(d, str):
             with open(data, "rt") as f:
                 d = yaml.load(f)
@@ -23,19 +26,13 @@ if yaml:
         return d
 
 
-    @reader(
-        file_load=lambda data: yaml.load(data),
-        path_load=lambda data: yaml.load(data.open("rt")),
-        string_load=_string_loader
-    )
+    @reader(load=_load)
     def from_yaml():
         """Read data from YAML string, file object or path"""
         pass  # pragma: no cover
 
 
-    @writer(
-        dump=lambda data: yaml.dump(data)
-    )
+    @writer(dump=lambda data: yaml.dump(data))
     def to_yaml():
         """Write data to YAML file or convert to YAML string"""
         pass  # pragma: no cover

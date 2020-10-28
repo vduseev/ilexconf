@@ -3,11 +3,12 @@ import pytest
 
 from ilexconf import Config, from_env, to_env
 
-# from ilexconf.tests.debug import debug
-
 
 def test_from_env_basic():
     os.environ["AWS_DEFAULT_REGION"] = "us-east-1"
+
+    # from ilexconf.tests.debug import debug
+    # debug()
 
     # Prefix = AWS_
     # Separator = __
@@ -54,7 +55,6 @@ def test_from_env_no_separator():
         assert config.aws_default_region == "whatever"
     assert config.aws_default_region == Config()
 
-    # debug()
     config = from_env(separator="", lowercase=True)
     with pytest.raises(AssertionError):
         assert config.AWS_DEFAULT_REGION == "us-east-1"

@@ -1,6 +1,4 @@
-from ilexconf.helpers import keyval_to_dict
-
-from typing import Any, Dict, Mapping, List, Sequence
+from typing import Any, Dict, Hashable, Mapping, List, Sequence, Union
 
 
 # [not-sequence-types]
@@ -11,121 +9,97 @@ NOT_SEQUENCE_TYPES = (str, bytes, bytearray)
 
 
 class Config(dict):
-    """Config is a dictionary compatible object.
-
-    **Why Config?** Config provides *convenient* methods to work with mappings. It allows 
-    addressing the keys via attributes and correctly merges multiple mappings
-    within one object.
-
-    **Goal.** The main purpose of the Config is to simplify the process of working
-    with multiple mappings by combining them within one object and adding
-    convenience methods to access values, create them, change them, or dump
-    them to files.
-    
-    **How it works.** Config inherits ``dict`` class, but behaves like a ``defaultdict``. When
-    a key that does not exist in the Config is accessed then an empty Config
-    value is created in its place. Config overrides ``dict`` methods to implement
-    its convenient flow.
-
-    Args:
-        *mappings (Mapping): Mapping-like objects that will be used to
-            initialize Config object.
-        **kwargs: Keyword arguments that will be used to initialize Config
-            object. If the key contains ``__`` separator in its name then
-            the key will be split by it to form a hierarchical dictionary with
-            the value in it.
-
-    Examples:
-        Create empty Config object:
-
-        >>> config = Config()
-        Config{}
-
-        Create Config from dictionary:
-
-        >>> config = Config({ "name": "Boris" })
-        Config{'name': 'Boris'}
-
-        Create Config from keyword arguments:
-
-        >>> config = Config(database__host = "172.31.49.120")
-        Config{'database': Config{'host': '172.31.49.120'}}
-
-        
-    """
-
-    def __init__(self, *mappings: Mapping[Any, Any], **kwargs: Dict):
+    def __init__(self, *mappings: Mapping[Hashable, Any], **kwargs: Dict):
         super().__init__()
-
-        # Merge in values of mappings
         self.merge(*mappings, **kwargs)
 
     def __getitem__(self, item):
         if isinstance(item, str) and "." in item:
             key, subkey = item.split(".", maxsplit=1)
-            return self._dd_getitem(key).__getitem__(subkey)
+            return self._default_getitem(key).__getitem__(subkey)
         else:
-            return self._dd_getitem(item)
+            return self._default_getitem(item)
 
     def __getattr__(self, attr):
-        return self._dd_getitem(attr)
+        return self._default_getitem(attr)
 
     def __setitem__(self, item, value):
-        value = self.parse(value)
+        value = self._parse_value(value)
         if isinstance(item, str) and "." in item:
             key, subkey = item.split(".", maxsplit=1)
-            self._dd_getitem(key).__setitem__(subkey, value)
+            self._default_getitem(key).__setitem__(subkey, value)
         else:
             dict.__setitem__(self, item, value)
 
     def __setattr__(self, attr, value):
-        value = self.parse(value)
+        value = self._parse_value(value)
         dict.__setitem__(self, attr, value)
 
     def __repr__(self):
         return f"Config{dict.__repr__(self)}"
 
-    def merge(self, *mappings: Mapping[Any, Any], **kwargs) -> None:
-        """Merge values of mappings with current config recursively."""
-
-        # For every key of that mapping
+    def merge(self, *mappings: Mapping[Hashable, Any], _strategy="recursive", _separator="__", _inverse=False, **kwargs) -> "Config":
+        # Collect all key-value pairs from mappings and keyword arguments
+        # into a single ordered list with last element having the highest
+        # priority.
+        items = []
+        # From mappings
         for mapping in mappings:
-            for key, value in mapping.items():
+            items += mapping.items()
+        # From keyword arguments
+        items += kwargs.items()
 
-                parsed = self.parse(value)
-                self.update(
-                    {
-                        key: Config(self[key], parsed)
-                        if key in self
-                        and isinstance(self[key], Config)
-                        and isinstance(parsed, Config)
-                        else parsed
-                    }
-                )
+        for k, v in items:
+            parsed = Config.from_keyvalue(k, v, separator=_separator)
+            if _inverse:
+                parsed.update(self, strategy=_strategy)
+                super().__init__()
+                self.merge(parsed, _strategy=_strategy, _separator=_separator, _inverse=False)
+            else:
+                self.update(parsed, strategy=_strategy)
 
-        # Merge in values of keyword arguments
-        for k, v in kwargs.items():
-            keyval_dict = keyval_to_dict(k, v)
-            self.merge(keyval_dict)
+        return self
+    
+    def submerge(self, *mappings: Mapping[Hashable, Any], _strategy="recursive", _separator=".", **kwargs) -> "Config":
+        return self.merge(*mappings, _strategy=_strategy, _separator=_separator, _inverse=True, **kwargs)
+
+    def update(self, config: "Config", strategy="recursive") -> "Config":
+        if not isinstance(config, Config):
+            raise TypeError(f"Unsupported type of config argument: {type(config)}. Only Config is supported.")
+       
+        for key in config:
+            if strategy == "recursive" and key in self and isinstance(self[key], Config) and isinstance(config[key], Config):
+                self[key].update(config[key], strategy=strategy)
+            else:
+                self[key] = config[key]
+
+        return self
 
     @staticmethod
-    def parse(value: Any):
-        # If value is another Mapping: dict, Config, etc.
-        if isinstance(value, Mapping):
-            return Config(value)
+    def from_keyvalue(key: Hashable, value: Any, prefix: str = "", separator: str = "__", lowercase: bool = False, uppercase: bool = False) -> "Config":
+        parts = Config._parse_key(key, prefix=prefix, separator=separator, lowercase=lowercase, uppercase=uppercase)
+        if not parts:
+            return Config()
 
-        # If value is a Sequence but not str, bytes, or bytearray
-        elif isinstance(value, Sequence) and not isinstance(value, NOT_SEQUENCE_TYPES):
-            l = list()
-            for i in value:
-                l.append(Config.parse(i))
-            # Return sequence with the same type
-            t = type(value)
-            return t(l)
+        value = Config._parse_value(value)
 
-        # If value is anything else
-        else:
-            return value
+        # Fill in a hierarchical structure by
+        # continuously building up the config in reverse order.
+        result = value
+        while parts:
+
+            # Take the last part of the key no processed yet
+            k = parts.pop()
+
+            # Create an empty config and assign current saved ``result``
+            # to ``k`` in it.
+            config = Config()
+            config[k] = result
+
+            # Rebind result to point to the newly created config
+            result = config
+
+        return result
 
     def flatten(self, prefix="", separator="."):
         """Flatten current config so that there is no hierarchy."""
@@ -138,7 +112,7 @@ class Config(dict):
                 d.update(flattened)
             else:
                 d[f"{p}{key}"] = self[key]
-        return Config(d)
+        return d
 
     def lower(self):
         """Lowercase all string keys of the configuration"""
@@ -153,7 +127,9 @@ class Config(dict):
     def copy(self):
         """Return deep copy of the Config object."""
 
-        return Config(self.as_dict())
+        config = Config._parse_value(self)
+        return config
+        # return Config(self.as_dict())
 
     def as_dict(self, lowercase: bool = False, uppercase: bool = False):
         """Convert configuration to dict object.
@@ -234,7 +210,7 @@ class Config(dict):
 
         return (headers, rows)
 
-    def _dd_getitem(self, item):
+    def _default_getitem(self, item):
         """Implements defaultdict feature
 
         DefaultDict getitem method
@@ -242,3 +218,65 @@ class Config(dict):
         if item not in self:
             dict.__setitem__(self, item, Config())
         return dict.__getitem__(self, item)
+
+    @staticmethod
+    def _parse_key(key: Hashable, prefix: str = "", separator: str = "__", lowercase: bool = False, uppercase: bool = False) -> List[Hashable]:
+        if not isinstance(key, str):
+            # When key is not a string, then it cannot be split.
+            # Thus, return the key as is
+            return [key]
+
+        if prefix and not key.startswith(prefix):
+            # If prefix is specified, then return nothing
+            return []
+
+        # Strip key off of prefix
+        key = key[len(prefix) :]
+
+        # Convert to lowercase/uppercase if needed
+        key, prefix, separator = [
+            v.lower() if lowercase else v.upper() if uppercase else v for v in [
+                key, prefix, separator
+            ]
+        ]
+
+        # Strip any dangling separator leftovers around the key
+        if separator and key.startswith(separator):
+            key = key[len(separator) :]
+        if separator and key.endswith(separator):
+            key = key[: -len(separator)]
+
+        # Split the key into 2 parts using the separator.
+        # If the key does not contain a separator string in it, then just return a parts
+        # list consisting of the key itself.
+        parts = key.split(separator, maxsplit=1) if separator else [key]
+
+        if len(parts) > 1:
+            # When key has been split successfully, then the second part of the split
+            # is eligible for the same processing routine and a recursive call is made.
+            key, subkey = parts  # unpack split parts for readability
+            return [key] + Config._parse_key(subkey, prefix="", separator=separator, lowercase=lowercase, uppercase=uppercase)
+
+        else:
+            # If key was not split, then there is nothing to split anymore and we just
+            # return the key
+            return [parts[0]]
+
+    @staticmethod
+    def _parse_value(value: Any) -> Union["Config", Sequence, Any]:
+        # If value is another Mapping: dict, Config, etc.
+        if isinstance(value, Mapping):
+            return Config(value)
+
+        # If value is a Sequence but not str, bytes, or bytearray
+        elif isinstance(value, Sequence) and not isinstance(value, NOT_SEQUENCE_TYPES):
+            l = list()
+            for i in value:
+                l.append(Config._parse_value(i))
+            # Return sequence with the same type
+            t = type(value)
+            return t(l)
+
+        # If value is anything else
+        else:
+            return value

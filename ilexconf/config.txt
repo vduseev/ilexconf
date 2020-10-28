@@ -1,0 +1,158 @@
+    """Config is a dictionary compatible object.
+
+    **Why Config?** Config provides *convenient* methods to work with mappings. It allows 
+    addressing the keys via attributes and correctly merges multiple mappings
+    within one object.
+
+    **Goal.** The main purpose of the Config is to simplify the process of working
+    with multiple mappings by combining them within one object and adding
+    convenience methods to access values, create them, change them, or dump
+    them to files.
+    
+    **How it works.** Config inherits ``dict`` class, but behaves like a ``defaultdict``. When
+    a key that does not exist in the Config is accessed then an empty Config
+    value is created in its place. Config overrides ``dict`` methods to implement
+    its convenient flow.
+    
+    __init__
+        --> merge
+            --> from_keyvalue
+                --> _parse_key
+                --> _parse_value
+            --> update
+
+    Args:
+        *mappings (Mapping): Mapping-like objects that will be used to
+            initialize Config object.
+        **kwargs: Keyword arguments that will be used to initialize Config
+            object. If the key contains ``__`` separator in its name then
+            the key will be split by it to form a hierarchical dictionary with
+            the value in it.
+
+    Examples:
+        Create empty Config object:
+
+        >>> config = Config()
+        Config{}
+
+        Create Config from dictionary:
+
+        >>> config = Config({ "name": "Boris" })
+        Config{'name': 'Boris'}
+
+        Create Config from keyword arguments:
+
+        >>> config = Config(database__host = "172.31.49.120")
+        Config{'database': Config{'host': '172.31.49.120'}}
+
+    """
+
+        """Merge values of mappings with current config recursively.
+        
+        If any key in any of the ``mappings`` contains a separator, then the
+        key will be split into nested parts.
+        
+        Every value of every mapping is parsed using ``Config.parse()`` method.
+
+        Keys with nested subkeys and values are smartly merged down to the last
+        non-mergable key. If a key in the current Config contains non-Config value
+        or if the same key in an incoming mapping contains a plain non-Config
+        mapping, then the key in the current Config is just overwritten with the
+        incoming value.
+        
+        """
+
+        """Merge config into current Config object.
+
+                """Parse key-value pair into Config.
+
+        This is a recursive function able to parse key-value pairs into
+        hierarchical dictionaries.
+
+        Args:
+            key (Hashable): The key tied to the value. Can contain prefix and
+                separators if it's a ``str`` type.
+            value (Any): Value of Any type tied to the key.
+            prefix (str): Prefix to reject keys without it. Defaults to "".
+            separator (str): Separator to split key into nested dictionary.
+                Defaults to "__".
+            lowercase (bool): Flag that indicates that the key must be lowercased
+                during processing. Takes precedence over ``uppercase`` flag.
+                Defaults to False.
+            uppercase (bool): Flag that indicates that the key must be uppercased
+                during processing. Has lower precendece than the ``lowercase``
+                argument. Defaults to False. 
+
+        Returns:
+            Dict: key-value pair parsed into a dictionary. 
+            
+            Returns empty dictionary {} if non-empty prefix is specified and
+            the key did not match it.
+
+        Examples:
+            Parse AWS environment variable:
+            
+            >>> key = "AWS_DEFAULT_REGION"
+            >>> value = "us-east-1"
+            >>> Config.keyval_to_config(key, value, prefix="AWS", separator="_", lowercase=True)
+            {
+                "default": {
+                    "region": "us-east-1"
+                }
+            }
+
+            >>> Config.keyval_to_config(key, value)
+            {
+                "AWS_DEFAULT_REGION": "us-east-1"
+            }
+
+            >>> Config.keyval_to_config(key, value, separator="_")
+            {
+                "AWS": {
+                    "DEFAULT": {
+                        "REGION": "us-east-1"
+                    }
+                }
+            }
+
+        """
+
+
+
+        Merge ``config`` argument into the current Config object. If 
+        ``strategy`` == "recursive", then for each key in ``config`` 
+        there might be a recursive update() call.
+        If ``strategy`` == "overwrite", then when ``config`` contains
+        a key that already exists in the current Config the value of 
+        that key will be overwritten with the value from ``config``.
+
+        Args:
+            config (Config): Another config to merge in.
+            strategy (:obj:`str`, optional): Merging strategy. Defaults to "recursive".
+
+        Returns:
+            Config: Returns current Config after update.
+
+        Raises:
+            TypeError: When ``config`` argument is not an instance of Config.
+
+        """
+
+        """Parse given value recursively.
+
+        Args:
+            value (Any): Value to parse.
+
+        Returns:
+            Config: When ``value`` is a Mapping, then a Config is constructued
+            out of it and returned.
+
+            Sequence: When ``value`` is a list, tuple. or another Sequence type
+            (except for ``NOT_SEQUENCE_TYPES``). The type of the sequence is kept
+            intact. Every element of the sequence is parsed with a recursive
+            call to ``parse_value``.
+
+            Any: When value does not fit both conditions specified above then
+            it's returned as is.
+        """
+
