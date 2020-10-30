@@ -14,7 +14,7 @@ def test_from_env_basic():
     # Separator = __
     # Lowercase = True
     config = from_env(prefix="AWS_", separator="__", lowercase=True)
-    assert config.as_dict() == {"default_region": "us-east-1"}
+    assert dict(config) == {"default_region": "us-east-1"}
 
     # Prefix = "" (empty)
     # Separator = ""

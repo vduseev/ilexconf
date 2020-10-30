@@ -39,5 +39,5 @@ def test_features():
         config.a.b.c[1] == Config({"d": "nested_value"})
     )
     assert (
-        config.a.b.c[1].as_dict() == {"d": "nested_value"}
+        dict(config.a.b.c[1]) == {"d": "nested_value"}
     )

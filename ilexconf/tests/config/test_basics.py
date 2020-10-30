@@ -53,7 +53,7 @@ def test_nested_access():
 
 def test_simple_merge():
     cfg = Config(Config({"c1": 1, "C2": 2, "c3": 3}), Config({"c3": "val"}))
-    assert cfg.as_dict() == {"c1": 1, "C2": 2, "c3": "val"}
+    assert dict(cfg) == {"c1": 1, "C2": 2, "c3": "val"}
 
 
 def test_nested_merge():
@@ -61,20 +61,18 @@ def test_nested_merge():
     # "val" has replaced 3 as value for a1.b1.c3
     assert cfg.a1.b1.c3 == "val"
     # other values are still intact
-    print(cfg)
     assert cfg.a1.b2.c3 == 1.1
     assert cfg.a1.b1.c1 == 1
 
 
 def test_list():
     cfg = Config(WITH_LISTS)
-    print(cfg)
-    assert cfg.as_dict() == WITH_LISTS
+    assert dict(cfg) == WITH_LISTS
 
 
 def test_as_dict():
     cfg = Config(NESTED, MERGABLE)
-    d = cfg.as_dict()
+    d = dict(cfg)
     assert d == MERGED
 
 
@@ -108,7 +106,7 @@ def test_setattr_dict():
     # Assign dict to the key. It should atuomatically
     # get transformed into the Config object.
     cfg.a = d
-    assert cfg.a.as_dict() == d
+    assert dict(cfg.a) == d
     assert cfg.a == Config(d)
 
     # Notice how the dict got transformed into a Config
@@ -160,7 +158,10 @@ def test_upper():
     config.merge({"sOmE_kEy": True})
     assert config.sOmE_kEy == True
 
-    config = config.upper()
+    uppered = config.upper()
+    assert uppered.SOME_KEY == True
+
+    config.upper(inplace=True)
     assert config.SOME_KEY == True
 
 
@@ -178,6 +179,8 @@ def test_simple_as_table(settings_json_dict):
 
 
 def test_limit_as_table(settings_json_dict):
+    # from ilexconf.tests.debug import debug
+    # debug()
     config = Config(settings_json_dict)
     headers, rows = config.as_table(limit=3)
 

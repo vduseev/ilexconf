@@ -11,7 +11,13 @@ from .common.decorators import reader, writer
 def _load(string: str) -> Mapping[str, Any]:
     parser = ConfigParser()
     parser.read_string(string)
-    return parser
+
+    d = {}
+    for s in parser.sections() + ["DEFAULT"]:
+        d[s] = {}
+        for k in parser[s]:
+            d[s][k] = parser[s][k]
+    return d
 
 
 def _str_resolver(string: str) -> bool:
@@ -28,11 +34,11 @@ def _dump(data: Mapping[str, Any]) -> str:
 
     # Initialize INI config
     ini = ConfigParser()
-    for k in config.keys():
-        if isinstance(config[k], Config):
-            ini[k] = config[k].flatten()
+    for s in config:
+        if isinstance(config[s], Config):
+            ini[s] = config[s].flatten()
         else:
-            ini["DEFAULT"] = str(config[k])
+            ini["DEFAULT"] = str(config[s])
 
     # Serialize INI config to string
     output = StringIO()

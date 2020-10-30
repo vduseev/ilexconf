@@ -30,7 +30,7 @@ def test_surrounded_by_separator():
 
 
 def test_nested_example():
-    assert Config.from_keyvalue(key, value, separator="_") == Config({
+    assert Config.from_keyvalue(key, value, sep="_") == Config({
         "AWS": {
             "DEFAULT": {
                 "REGION": value
@@ -38,7 +38,7 @@ def test_nested_example():
         }
     })
 
-    assert Config.from_keyvalue(key, value, prefix="AWS", separator="_") == Config({
+    assert Config.from_keyvalue(key, value, prefix="AWS", sep="_") == Config({
         "DEFAULT": {
             "REGION": value
         }

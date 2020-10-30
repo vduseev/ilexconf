@@ -49,8 +49,9 @@ def reader(
             # dictionary
             deserialized = pre_processing(deserialized)
 
-            config = Config._parse_value(deserialized)
-            return config
+            #config = Config.parse_value(deserialized)
+            #return config
+            return Config.traverse(deserialized)
 
         return wrapper_reader
 
@@ -71,7 +72,7 @@ def writer(dump: DumpCallable = _dummy_dump, **default_kwargs):
             data: Mapping[Any, Any], destination: AddressArg = None, **kwargs
         ):
             if isinstance(data, Config):
-                data = data.as_dict()
+                data = dict(data)
 
             # Merge kwargs passed as argument to adapter on top of
             # default kwargs

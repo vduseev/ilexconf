@@ -31,32 +31,32 @@ def test_quick_start(
 
     # Empty config
     config = Config()
-    assert config.as_dict() == {}
+    assert dict(config) == {}
 
     # Create config from json and merge it into our initial config
     # Let settings_json_file_path = "settings.json" where inside the file we have
     # { "database": { "connection": { "host": "localhost", "port": 5432 } } }
     config.merge(from_json(settings_json_file_path))
-    assert config.as_dict() == {
+    assert dict(config) == {
         "database": {"connection": {"host": "localhost", "port": 5432}}
     }
 
     # Merge dict into config
     config.merge({"database": {"connection": {"host": "test.local"}}})
-    assert config.as_dict() == {
+    assert dict(config) == {
         "database": {"connection": {"host": "test.local", "port": 5432}}
     }
 
     # Merge environment variables into config
     config.merge(from_env(prefix="AWS_", separator="__", lowercase=True))
-    assert config.as_dict() == {
+    assert dict(config) == {
         "database": {"connection": {"host": "test.local", "port": 5432}},
         "default_region": "us-east-1",
     }
 
     # Merge keyword arguments
     config.merge(my__keyword__argument=True)
-    assert config.as_dict() == {
+    assert dict(config) == {
         "database": {"connection": {"host": "test.local", "port": 5432}},
         "default_region": "us-east-1",
         "my": {"keyword": {"argument": True}},
@@ -64,7 +64,7 @@ def test_quick_start(
 
     # Clear values, just like with dict
     config.clear()
-    assert config.as_dict() == {}
+    assert dict(config) == {}
 
     # Or, better yet, do this all in one step, since Config() constructor
     # accepts any number of mapping objects and keyword arguments as
@@ -75,7 +75,7 @@ def test_quick_start(
         {"database": {"connection": {"host": "test.local"}}},
         database__connection__port=4000,
     )
-    assert config.as_dict() == {
+    assert dict(config) == {
         "database": {"connection": {"host": "test.local", "port": 4000}}
     }
     # [create]
@@ -91,7 +91,7 @@ def test_quick_start(
     # )
     # [read]
     cfg1 = from_json(settings_json_file_path)
-    assert cfg1.as_dict() == {
+    assert dict(cfg1) == {
         "database": {"connection": {"host": "localhost", "port": 5432}}
     }
     # [read]
@@ -155,11 +155,11 @@ def test_quick_start(
 
     # Instead of overriding the value of the "a1" key completely, `merge` method
     # will recursively look inside and merge nested values.
-    assert merged.as_dict() == {"a1": {"c1": 1, "c2": 2, "c3": "other"}}
+    assert dict(merged) == {"a1": {"c1": 1, "c2": 2, "c3": "other"}}
     # [smart-merge]
 
     # [as-dict]
-    assert config.as_dict() == {
+    assert dict(config) == {
         "database": {
             "connection": {
                 "host": "test.local",
@@ -177,7 +177,7 @@ def test_quick_start(
     # Save config
     to_json(config, p)
     # Verify written file is correct
-    assert from_json(p).as_dict() == {
+    assert dict(from_json(p)) == {
         "database": {
             "connection": {
                 "host": "test.local",
@@ -212,8 +212,8 @@ def test_quick_start(
     # MyConfig will have the following values:
 
     config = MyConfig(do_stuff=True)
-    print(config.as_dict())
-    assert config.as_dict() == {
+    print(dict(config))
+    assert dict(config) == {
         "database": {
             "connection": {
                 "host": "localhost",

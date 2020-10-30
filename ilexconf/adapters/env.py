@@ -15,7 +15,7 @@ def from_env(prefix="", separator="__", lowercase=False, uppercase=False):
     for k, v in os.environ.items():
         # Convert current key-value pair to Mapping
         d = Config.from_keyvalue(
-            k, v, prefix=prefix, separator=separator, lowercase=lowercase, uppercase=uppercase
+            k, v, prefix=prefix, sep=separator, lowercase=lowercase, uppercase=uppercase
         )
         # Merge this Mapping into config
         config.merge(d)

@@ -32,6 +32,4 @@ def test_write_example(sample_ini, tmp_path):
     to_ini(config, path)
 
     reloaded = from_ini(path)
-    print(to_json(config))
-    print(to_json(reloaded))
     assert config == reloaded
