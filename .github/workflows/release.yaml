@@ -48,7 +48,7 @@ jobs:
       - uses: ./.github/actions/setup
       - name: Build and push to PyPI
         env:
-          PYPI_USERNAME: "{{ secrets.PYPI_USERNAME }}"
+          PYPI_USERNAME: "${{ secrets.PYPI_USERNAME }}"
           PYPI_PASSWORD: "${{ secrets.PYPI_PASSWORD }}"
         run: |
           # Change version
