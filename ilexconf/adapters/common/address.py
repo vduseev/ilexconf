@@ -1,6 +1,6 @@
 from enum import Enum, auto
 
-from typing import  Union, Callable
+from typing import Union, Callable
 from io import TextIOBase
 from pathlib import Path
 
@@ -12,7 +12,7 @@ StrResolver = Callable[[str], bool]
 class AddressType(Enum):
     """Type of source or destination.
 
-    Provides built-in methods to load/write from/to any of the supported 
+    Provides built-in methods to load/write from/to any of the supported
     source and destination types.
 
     Attributes:
@@ -32,8 +32,7 @@ class AddressType(Enum):
 
 
 class Address:
-    """
-    """
+    """"""
 
     @staticmethod
     def read(source: AddressArg, str_resolver: StrResolver = None) -> str:
@@ -46,7 +45,11 @@ class Address:
         return data
 
     @staticmethod
-    def write(data: str, destination: AddressArg = None, str_resolver: StrResolver = None) -> None:
+    def write(
+        data: str,
+        destination: AddressArg = None,
+        str_resolver: StrResolver = None,
+    ) -> None:
         # Determine type of the destination argument
         destination_type = Address._resolve(destination, str_resolver)
 
@@ -56,7 +59,9 @@ class Address:
         return result
 
     @staticmethod
-    def _resolve(address: AddressArg, str_resolver: StrResolver = None) -> int:
+    def _resolve(
+        address: AddressArg, str_resolver: StrResolver = None
+    ) -> int:
         """Determine which type the ``data`` argument belongs to.
 
         Args:

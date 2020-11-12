@@ -73,7 +73,9 @@ class ListCommand(Command):
                 file_config = filetype.reader(filename, read_from_file=True)
                 config.merge(file_config)
             except Exception as e:
-                self.line(f"<error>Could not parse {filename} file: {e}</error>")
+                self.line(
+                    f"<error>Could not parse {filename} file: {e}</error>"
+                )
                 exit()
 
         if self.option("env"):
@@ -87,7 +89,9 @@ class ListCommand(Command):
                     env_config = from_env(**params)
                     config.merge(env_config)
                 except Exception as e:
-                    self.line("<error>Could not parse environment variables</error>")
+                    self.line(
+                        "<error>Could not parse environment variables</error>"
+                    )
                     exit()
 
         # Flatten configuration if requested
@@ -119,5 +123,7 @@ class ListCommand(Command):
 
         # Guess file format using extension and inverted index
         return (
-            extension_matching[extension] if extension in extension_matching else None
+            extension_matching[extension]
+            if extension in extension_matching
+            else None
         )

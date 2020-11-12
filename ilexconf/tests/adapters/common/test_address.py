@@ -14,7 +14,12 @@ def test_read_string(settings_json_string):
 
 
 def test_read_string_path(settings_json_file_path, settings_json_string):
-    assert Address.read(settings_json_file_path, str_resolver=lambda string: True) == settings_json_string
+    assert (
+        Address.read(
+            settings_json_file_path, str_resolver=lambda string: True
+        )
+        == settings_json_string
+    )
 
 
 def test_read_path(settings_json_file_path, settings_json_string):
@@ -43,8 +48,10 @@ def test_write_string(settings_json_string):
 
 def test_write_string_path(settings_json_string, tmp_path):
     path = tmp_path / "save_string_path.txt"
-    Address.write(settings_json_string, str(path), str_resolver=lambda string: True)
-    
+    Address.write(
+        settings_json_string, str(path), str_resolver=lambda string: True
+    )
+
     with open(str(path), "rt") as f:
         assert f.read() == settings_json_string
 

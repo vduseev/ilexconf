@@ -1,14 +1,15 @@
 import os
 import pytest
 
+from ilexconf.config import Config
 from ilexconf.adapters.ini import from_ini, to_ini
-from ilexconf.adapters.json import from_json, to_json
+from ilexconf.adapters.json import from_json
 
 
 @pytest.fixture(scope="module", autouse=True)
 def ini_dir(fixture_dir):
     return os.path.join(fixture_dir, "ini")
-    
+
 
 @pytest.fixture(scope="module", autouse=True)
 def sample_ini(ini_dir):
@@ -33,3 +34,19 @@ def test_write_example(sample_ini, tmp_path):
 
     reloaded = from_ini(path)
     assert config == reloaded
+
+
+def test_write_nonstandard(tmp_path):
+    config = Config(
+        {"database": {"host": "localhost", "port": 1234}, "name": "Duhast"}
+    )
+
+    path = tmp_path / "nonstandard.ini"
+    to_ini(config, path)
+
+    reloaded = from_ini(path)
+    other = {
+        "database": {"host": "localhost", "port": "1234", "name": "Duhast"},
+        "DEFAULT": {"name": "Duhast"},
+    }
+    assert reloaded.to_dict() == other

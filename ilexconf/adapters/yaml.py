@@ -1,38 +1,76 @@
+import sys
+import os
+from io import StringIO
+from mapz import Mapz
+
+
 try:
+    # Special case for pytest coverage
+    if "_pytest_yaml_test_pyyaml" in os.environ:
+        raise ImportError()
+
     from ruamel.yaml import YAML
+
     yaml = YAML()
+    yaml_load = yaml.load
 except ImportError:
     try:
-        import pyyaml as yaml
+        # Special case for pytest coverage
+        if "_pytest_yaml_test_noyaml" in os.environ:
+            raise ImportError()
+
+        import yaml
+
+        yaml_load = yaml.safe_load
     except ImportError:
+        print("AAAAA")
         yaml = None
 
 from .common.decorators import reader, writer
 
 
+def from_yaml(*args, **kwargs):
+    raise NotImplementedError(
+        "ruamel.yaml or PyYaml must be installed in order to use YAML adapter"
+    )
+
+
+def to_yaml(*args, **kwargs):
+    raise NotImplementedError(
+        "ruamel.yaml or PyYaml must be installed in order to use YAML adapter"
+    )
+
+
 if yaml:
+
     def _load(data: str):
         # If data is a string in a form of
         # "name: boris" or "name:" then it will
         # be parsed by yaml module to a str instance.
-        d = yaml.load(data)
+        d = yaml_load(data)
 
         # Do not accept plain string yaml files
         # as configs. Treat such strings as paths.
         if isinstance(d, str):
             with open(data, "rt") as f:
-                d = yaml.load(f)
-        
+                d = yaml_load(f)
+
         return d
 
+    def _dump(data, **kwargs) -> str:
+        stream = StringIO()
+
+        yaml.dump(data, stream, **kwargs)
+        dumped = stream.getvalue()
+
+        return dumped
 
     @reader(load=_load)
     def from_yaml():
         """Read data from YAML string, file object or path"""
         pass  # pragma: no cover
 
-
-    @writer(dump=lambda data: yaml.dump(data))
+    @writer(dump=_dump)
     def to_yaml():
         """Write data to YAML file or convert to YAML string"""
         pass  # pragma: no cover

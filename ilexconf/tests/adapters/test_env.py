@@ -13,7 +13,7 @@ def test_from_env_basic():
     # Prefix = AWS_
     # Separator = __
     # Lowercase = True
-    config = from_env(prefix="AWS_", separator="__", lowercase=True)
+    config = from_env(prefix="AWS_", separator="__").lower(inplace=True)
     assert dict(config) == {"default_region": "us-east-1"}
 
     # Prefix = "" (empty)
@@ -28,16 +28,16 @@ def test_from_env_no_prefix():
     os.environ["AWS_DEFAULT_REGION"] = "us-east-1"
 
     # debug()
-    config = from_env(separator="_", lowercase=True)
+    config = from_env(separator="_").lower(True)
     with pytest.raises(AssertionError):
         # Should raise error, because correct key is config.aws.deault.region
         assert config.default.region == "us-east-1"
     assert config.aws.default.region == "us-east-1"
 
-    config = from_env(lowercase=True)
+    config = from_env().lower(True)
     assert config.aws_default_region == "us-east-1"
 
-    config = from_env(prefix=None, lowercase=True)
+    config = from_env(prefix=None).lower(True)
     assert config.aws_default_region == "us-east-1"
 
     config = from_env()
@@ -50,12 +50,12 @@ def test_from_env_no_prefix():
 def test_from_env_no_separator():
     os.environ["AWS_DEFAULT_REGION"] = "us-east-1"
 
-    config = from_env(prefix="_", lowercase=True)
+    config = from_env(prefix="_").lower(True)
     with pytest.raises(AssertionError):
         assert config.aws_default_region == "whatever"
     assert config.aws_default_region == Config()
 
-    config = from_env(separator="", lowercase=True)
+    config = from_env(separator="").lower(True)
     with pytest.raises(AssertionError):
         assert config.AWS_DEFAULT_REGION == "us-east-1"
     assert config.aws_default_region == "us-east-1"
@@ -79,30 +79,28 @@ def test_from_env_one_dash_separator():
         assert config.aws.default.region == "us-east-1"
     assert config.AWS.DEFAULT.REGION == "us-east-1"
 
-    config = from_env(separator="_", lowercase=True)
+    config = from_env(separator="_").lower(True)
     with pytest.raises(AssertionError):
         assert config.AWS.DEFAULT.REGION == "us-east-1"
     assert config.aws.default.region == "us-east-1"
 
 
 def test_to_env_current_context():
-    # TODO: Implement
-    pass
 
     os.environ["AWS_DEFAULT_REGION"] = "us-east-1"
 
-    config = from_env(lowercase=True)
+    config = from_env().lower(True)
     config.aws_default_region = "us-east-2"
-    to_env(config, prefix="", uppercase=True)
+    to_env(config.upper(), prefix="")
     assert os.environ["AWS_DEFAULT_REGION"] == "us-east-2"
 
-    to_env(config, prefix="MY", lowercase=False)
+    to_env(config.lower(), prefix="MY")
     assert os.environ["MYaws_default_region"] == "us-east-2"
 
     to_env(config, prefix="mY_")
     assert os.environ["mY_aws_default_region"] == "us-east-2"
 
-    to_env(config, prefix="MY_", uppercase=True)
+    to_env(config.upper(), prefix="MY_")
     with pytest.raises(KeyError):
         # Should not exist because MY_ is prefix
         assert os.environ["MY__AWS_DEFAULT_REGION"] == "us-east-2"

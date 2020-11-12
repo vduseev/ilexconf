@@ -4,24 +4,27 @@ from typing import Mapping, Any
 from .common.decorators import reader, writer
 
 
-def _load_json(string) -> Mapping[str, Any]:
+def _load(string) -> Mapping[str, Any]:
     parsed = loads(string)
     return parsed
 
 
-def _dump_json(data: Mapping[Any, Any], **kwargs) -> str:
+def _dump(data: Mapping[Any, Any], **kwargs) -> str:
     dumped = dumps(data, **kwargs)
     return dumped
 
 
-@reader(load=_load_json, str_resolver=lambda string: "{" not in string or "}" not in string)
+@reader(
+    load=_load,
+    str_resolver=lambda string: "{" not in string or "}" not in string,
+)
 def from_json():
     """Read JSON from string, file or path.
 
-    JSON adapter relies on Python's 
+    JSON adapter relies on Python's
     `json <https://docs.python.org/3/library/json.html>`_ module when
     working with ``.json`` files.
-    
+
     Args:
         data: Source of JSON. Accepts file, path or string:
 
@@ -54,20 +57,21 @@ def from_json():
     """
     pass  # pragma: no cover
 
-@writer(dump=_dump_json, indent=2)
+
+@writer(dump=_dump, indent=2)
 def to_json():
     """Write data to JSON file or convert to JSON string
-    
-    JSON adapter relies on Python's 
+
+    JSON adapter relies on Python's
     `json <https://docs.python.org/3/library/json.html>`_ module when
     working with ``.json`` files.
-    
+
     Args:
         data (Mapping): Mapping object to dump to JSON.
         destination (optional): Accepts either File (stream), Path or str. Defaults to ``None``.
         indent (:obj:`int`, optional): Indentation for JSON. Defaults to 2.
             Use ``indent=None`` to convert without indentation.
-        **kwargs: Any other keyword arguments accepted by 
+        **kwargs: Any other keyword arguments accepted by
             `json.dumps() <https://docs.python.org/3/library/json.html#json.dumps>`_ method.
 
     Returns:
@@ -75,7 +79,7 @@ def to_json():
 
     Raises:
         UnsupportedDataDestinationType: When ``destination`` argument is of wrong type.
- 
+
     Examples:
         Write to file object:
 
@@ -98,7 +102,6 @@ def to_json():
         Convert to string:
 
         >>> string = to_json(config)
-   
+
     """
     pass  # pragma: no cover
-    

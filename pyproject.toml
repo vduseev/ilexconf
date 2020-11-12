@@ -1,6 +1,6 @@
 [tool.poetry]
 name = "ilexconf"
-version = "0.6.3"
+version = "0.9.3"
 description = "Configuration library for Python 🔧 Load from multiple sources"
 authors = ["vduseev <vagiz@duseev.com>"]
 maintainers = ["vduseev <vagiz@duseev.com>"]
@@ -15,6 +15,7 @@ documentation = "https://ilexconf.com"
 python = "^3.8"
 cleo = {version = "^0.8.1", optional = true}
 "ruamel.yaml" = {version = "^0.16.12", optional = true}
+mapz = "^1.0.10"
 
 [tool.poetry.extras]
 console = ["cleo"]
@@ -43,6 +44,7 @@ Sphinx = "^3.2.1"
 sphinx-material = "^0.0.32"
 sphinxcontrib-programoutput = "^0.16"
 radon = "^4.3.2"
+PyYAML = "^5.3.1"
 
 [tool.poetry.scripts]
 ilexconf = "ilexconf.console:main"

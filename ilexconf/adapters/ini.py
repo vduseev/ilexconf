@@ -3,6 +3,7 @@ from typing import Mapping, Any
 from io import StringIO
 
 from ilexconf.config import Config
+from mapz import Mapz
 
 from .common.address import AddressArg
 from .common.decorators import reader, writer
@@ -35,10 +36,10 @@ def _dump(data: Mapping[str, Any]) -> str:
     # Initialize INI config
     ini = ConfigParser()
     for s in config:
-        if isinstance(config[s], Config):
+        if isinstance(config[s], Mapz):
             ini[s] = config[s].flatten()
         else:
-            ini["DEFAULT"] = str(config[s])
+            ini["DEFAULT"][s] = str(config[s])
 
     # Serialize INI config to string
     output = StringIO()
@@ -50,10 +51,10 @@ def _dump(data: Mapping[str, Any]) -> str:
 def from_ini(source: AddressArg):
     """Read INI from string, file or path.
 
-    INI adapter relies on Python's 
+    INI adapter relies on Python's
     `ConfigParser <https://docs.python.org/3/library/configparser.html>`_ when
     working with ``.ini`` configuration files.
-    
+
     Args:
         source (AddressArg): Source of INI. Accepts file, path or string:
 
@@ -91,14 +92,14 @@ def from_ini(source: AddressArg):
 def to_ini():
     """Write data to INI file or convert to INI string
 
-    INI adapter relies on Python's 
+    INI adapter relies on Python's
     `ConfigParser <https://docs.python.org/3/library/configparser.html>`_ when
     working with ``.ini`` configuration files.
 
     Any top level key of the ``data`` argument is considered to be a section.
     Any subsequent values or nested mappings of each of the top level keys are
     flattened before being written.
-    
+
     Args:
         data (Mapping): Mapping object to dump to INI.
         destination (optional): Accepts either File (stream), Path or str. Defaults to ``None``.
@@ -108,7 +109,7 @@ def to_ini():
 
     Raises:
         UnsupportedDataDestinationType: When ``destination`` argument is of wrong type.
- 
+
     Examples:
         Write to file object:
 
@@ -131,6 +132,6 @@ def to_ini():
         Convert to string:
 
         >>> string = to_ini(config)
-   
+
     """
     pass  # pragma: no cover

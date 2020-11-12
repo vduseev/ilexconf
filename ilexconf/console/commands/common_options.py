@@ -10,7 +10,9 @@ common_opts = Config()
 def _add_option(o, choices=None):
     common_opts[o.long_name].opt = o
     if choices:
-        common_opts[o.long_name].opt._description += f"Choices: {', '.join(choices)}."
+        common_opts[
+            o.long_name
+        ].opt._description += f"Choices: {', '.join(choices)}."
         common_opts[o.long_name].choices = choices
 
 

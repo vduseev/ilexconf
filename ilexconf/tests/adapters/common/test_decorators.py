@@ -9,9 +9,11 @@ from ilexconf.adapters.common.decorators import (
 
 
 @reader(
-    load=lambda string: { "name": string },
+    load=lambda string: {"name": string},
     str_resolver=lambda string: False,
-    pre_processing=lambda mapping: { k: v for k, v in list(mapping.items()) + [("surname", "Britva")] }
+    pre_processing=lambda mapping: {
+        k: v for k, v in list(mapping.items()) + [("surname", "Britva")]
+    },
 )
 def from_dummy():
     pass
@@ -24,22 +26,24 @@ def to_dummy():
 
 def test_dummy_load():
     s = "name"
-    assert _dummy_load(s) == s
+    assert _dummy_load(s) == {"value": s}
 
 
 def test_dummy_dump():
-    d = { "name": "Boris" }
+    d = {"name": "Boris"}
     assert _dummy_dump(d) == str(d)
 
 
 def test_dummy_pre_processing():
-    d = { "name": "Boris" }
+    d = {"name": "Boris"}
     assert _dummy_pre_processing(d) == d
 
 
 def test_reader_example():
-    assert from_dummy("Boris") == Config({ "name": "Boris", "surname": "Britva" })
+    assert from_dummy("Boris") == Config(
+        {"name": "Boris", "surname": "Britva"}
+    )
 
 
 def test_writer_example():
-    assert to_dummy({ "name": "Boris" }) == str({"name": "Boris"})
+    assert to_dummy({"name": "Boris"}) == str({"name": "Boris"})

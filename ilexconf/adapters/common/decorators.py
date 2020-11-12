@@ -1,6 +1,8 @@
 from functools import wraps
 
 from ilexconf.config import Config
+from mapz.methods import traverse
+
 from .address import Address, AddressArg, StrResolver
 
 from typing import Callable, Mapping, Any
@@ -10,11 +12,11 @@ DumpCallable = Callable[[Mapping[Any, Any]], str]
 PreProcessingCallable = Callable[[Mapping[Any, Any]], Mapping[Any, Any]]
 
 
-def _dummy_load(string: str) -> str:
-    return string
+def _dummy_load(string: str) -> Mapping:
+    return {"value": string}
 
 
-def _dummy_pre_processing(data: Mapping[Any, Any]) -> Mapping[Any, Any]:
+def _dummy_pre_processing(data: Mapping) -> Mapping:
     return data
 
 
@@ -25,7 +27,7 @@ def _dummy_dump(data: Mapping[Any, Any], **kwargs) -> str:
 def reader(
     load: LoadCallable = _dummy_load,
     str_resolver: StrResolver = None,
-    pre_processing: PreProcessingCallable = _dummy_pre_processing
+    pre_processing: PreProcessingCallable = _dummy_pre_processing,
 ):
     """Decorator for read adapter functions such as ``from_``.
 
@@ -49,9 +51,7 @@ def reader(
             # dictionary
             deserialized = pre_processing(deserialized)
 
-            #config = Config.parse_value(deserialized)
-            #return config
-            return Config.traverse(deserialized)
+            return traverse(deserialized, mapping_type=Config)
 
         return wrapper_reader
 
@@ -72,7 +72,7 @@ def writer(dump: DumpCallable = _dummy_dump, **default_kwargs):
             data: Mapping[Any, Any], destination: AddressArg = None, **kwargs
         ):
             if isinstance(data, Config):
-                data = dict(data)
+                data = data.to_dict()
 
             # Merge kwargs passed as argument to adapter on top of
             # default kwargs

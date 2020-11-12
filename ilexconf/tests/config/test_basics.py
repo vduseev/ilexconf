@@ -1,11 +1,13 @@
 from ilexconf import Config
 
-import json
 import pytest
 
 
 NESTED = {
-    "a1": {"b1": {"c1": 1, "C2": 2, "c3": 3}, "b2": {"c1": "a", "c2": True, "c3": 1.1}},
+    "a1": {
+        "b1": {"c1": 1, "C2": 2, "c3": 3},
+        "b2": {"c1": "a", "c2": True, "c3": 1.1},
+    },
     "d1": False,
 }
 
@@ -128,7 +130,11 @@ def test_setattr_list_with_dict():
     # Internally though any Mapping objects
     # inside that list, no matter how nested,
     # got transformed into the Config objects.
-    assert cfg.a == [Config({"b": True, "c": {"d": "thename"}}), "somestring", True]
+    assert cfg.a == [
+        Config({"b": True, "c": {"d": "thename"}}),
+        "somestring",
+        True,
+    ]
 
     # And, again, we get all the nice accessibility
     # shenenigans as a result of such transformation.
@@ -163,58 +169,3 @@ def test_upper():
 
     config.upper(inplace=True)
     assert config.SOME_KEY == True
-
-
-def test_simple_as_table(settings_json_dict):
-    config = Config(settings_json_dict)
-    headers, rows = config.as_table()
-
-    assert headers == ["Key", "Value"]
-    assert rows == [
-        ["database", ""],
-        ["  connection", ""],
-        ["    host", "localhost"],
-        ["    port", "5432"],
-    ]
-
-
-def test_limit_as_table(settings_json_dict):
-    # from ilexconf.tests.debug import debug
-    # debug()
-    config = Config(settings_json_dict)
-    headers, rows = config.as_table(limit=3)
-
-    assert rows == [
-        ["database", ""],
-        ["  connection", ""],
-        ["    host", "localhost"],
-        ["...", "..."],
-    ]
-
-
-def test_simple_flatten(settings_json_dict):
-    config = Config(settings_json_dict)
-
-    flat = config.flatten()
-    assert flat == {
-        "database.connection.host": "localhost",
-        "database.connection.port": 5432,
-    }
-
-
-def test_list_flatten():
-    # TODO: implement
-    pass
-
-
-def test_copy(settings_json_dict):
-    config = Config(settings_json_dict)
-
-    copy = config.copy()
-
-    # Change value in initial object and check it
-    config.database.connection.host = "1.2.3.4"
-    assert config.database.connection.host == "1.2.3.4"
-
-    # Make sure value in copied object has not changed
-    assert copy.database.connection.host == "localhost"

@@ -4,7 +4,9 @@ import pytest
 
 @pytest.fixture(scope="session", autouse=True)
 def fixture_dir():
-    return os.path.join(os.path.dirname(os.path.realpath(__file__)), "resources")
+    return os.path.join(
+        os.path.dirname(os.path.realpath(__file__)), "resources"
+    )
 
 
 @pytest.fixture(scope="session", autouse=True)

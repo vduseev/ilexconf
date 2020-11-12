@@ -48,14 +48,14 @@ def test_quick_start(
     }
 
     # Merge environment variables into config
-    config.merge(from_env(prefix="AWS_", separator="__", lowercase=True))
+    config.merge(from_env(prefix="AWS_", separator="__").lower(inplace=True))
     assert dict(config) == {
         "database": {"connection": {"host": "test.local", "port": 5432}},
         "default_region": "us-east-1",
     }
 
     # Merge keyword arguments
-    config.merge(my__keyword__argument=True)
+    config.set("my__keyword__argument", True, key_sep="__")
     assert dict(config) == {
         "database": {"connection": {"host": "test.local", "port": 5432}},
         "default_region": "us-east-1",
@@ -151,7 +151,9 @@ def test_quick_start(
     # [merge]
 
     # [smart-merge]
-    merged = Config({"a1": {"c1": 1, "c2": 2, "c3": 3}}, {"a1": {"c3": "other"}})
+    merged = Config(
+        {"a1": {"c1": 1, "c2": 2, "c3": 3}}, {"a1": {"c3": "other"}}
+    )
 
     # Instead of overriding the value of the "a1" key completely, `merge` method
     # will recursively look inside and merge nested values.
@@ -193,7 +195,7 @@ def test_quick_start(
     class MyConfig(Config):
         def __init__(self, do_stuff=False):
             # Initialize your custom config using json settings file
-            super().__init__(self, from_json(settings_json_file_path))
+            super().__init__(from_json(settings_json_file_path))
 
             # Add some custom value depending on some logic
             if do_stuff:
@@ -212,7 +214,6 @@ def test_quick_start(
     # MyConfig will have the following values:
 
     config = MyConfig(do_stuff=True)
-    print(dict(config))
     assert dict(config) == {
         "database": {
             "connection": {
