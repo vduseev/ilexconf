@@ -3,7 +3,7 @@ name: docs
 on:
   push:
     branches:
-      - master
+      - disabled
 
 jobs:
   build-docs:
