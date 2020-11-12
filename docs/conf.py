@@ -12,7 +12,8 @@
 #
 import os
 import sys
-sys.path.insert(0, os.path.abspath('.'))
+
+sys.path.insert(0, os.path.abspath("."))
 
 
 # -- Project information -----------------------------------------------------
@@ -35,7 +36,7 @@ extensions = [
     "sphinx.ext.napoleon",
     "sphinx.ext.viewcode",
     "sphinx.ext.autosectionlabel",
-    "sphinxcontrib.programoutput"
+    "sphinxcontrib.programoutput",
 ]
 
 # Add any paths that contain templates here, relative to this directory.
@@ -47,17 +48,14 @@ templates_path = ["_templates"]
 exclude_patterns = ["_build", "Thumbs.db", ".DS_Store"]
 
 # True to prefix each section label with the name of the document it is in,
-# followed by a colon. For example, index:Introduction for a section called 
-# Introduction that appears in document index.rst. Useful for avoiding 
+# followed by a colon. For example, index:Introduction for a section called
+# Introduction that appears in document index.rst. Useful for avoiding
 # ambiguity when the same section heading appears in different documents.
 autosectionlabel_prefix_document = True
 
 # -- Autodoc -----------------------------------------------------------------
 
-autodoc_default_options = {
-    'member-order': 'bysource',
-    'undoc-members': True
-}
+autodoc_default_options = {"member-order": "bysource", "undoc-members": True}
 
 # -- Options for HTML output -------------------------------------------------
 
@@ -69,7 +67,12 @@ html_logo = "_static/logo.png"
 html_favicon = "_static/logo.png"
 
 html_sidebars = {
-    "**": ["logo-text.html", "globaltoc.html", "localtoc.html", "searchbox.html"]
+    "**": [
+        "logo-text.html",
+        "globaltoc.html",
+        "localtoc.html",
+        "searchbox.html",
+    ]
 }
 
 # Material theme options (see theme.conf for more information)
