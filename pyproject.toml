@@ -13,9 +13,9 @@ documentation = "https://ilexconf.com"
 
 [tool.poetry.dependencies]
 python = "^3.8"
+mapz = "^1.0.10"
 cleo = {version = "^0.8.1", optional = true}
 "ruamel.yaml" = {version = "^0.16.12", optional = true}
-mapz = "^1.0.10"
 
 [tool.poetry.extras]
 console = ["cleo"]

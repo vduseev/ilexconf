@@ -1,8 +1,7 @@
-from ilexconf.config import Config
-
 from .env import from_env, to_env
 from .ini import from_ini, to_ini
 from .json import from_json, to_json
+from .argparse import from_argparse, to_argparse
 
 try:
     from .yaml import from_yaml, to_yaml
@@ -14,17 +13,16 @@ except ImportError:  # pragma: no cover
     to_yaml = None
 
 
-formats = Config()
-formats.json = {
-    "enabled": True,
-    "reader": from_json,
-    "writer": to_json,
-    "extensions": ["json"],
-}
+# formats.json = {
+#     "enabled": True,
+#     "reader": from_json,
+#     "writer": to_json,
+#     "extensions": ["json"],
+# }
 
-formats.yaml = {"enabled": yaml_here, "extensions": ["yaml", "yml"]}
-if yaml_here:  # pragma: no cover
-    formats.yaml.reader = from_yaml
-    formats.yaml.writer = to_yaml
+# formats.yaml = {"enabled": yaml_here, "extensions": ["yaml", "yml"]}
+# if yaml_here:  # pragma: no cover
+#     formats.yaml.reader = from_yaml
+#     formats.yaml.writer = to_yaml
 
-enabled_formats = [f for f in formats if formats[f].enabled]
+enabled_formats = ['json', 'yaml']

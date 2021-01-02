@@ -7,7 +7,6 @@ from typing import (
     Mapping,
 )
 
-
 class Config(Mapz):
     def __init__(self, *mappings: Mapping[Hashable, Any], **kwargs: Dict):
         super().__init__(*mappings)

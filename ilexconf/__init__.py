@@ -8,6 +8,8 @@ from ilexconf.adapters import (
     to_env,
     from_yaml,
     to_yaml,
+    to_argparse,
+    from_argparse,
 )
 
 __myall__ = [
