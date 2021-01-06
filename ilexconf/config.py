@@ -2,13 +2,12 @@ from mapz import Mapz
 
 from typing import (
     Any,
-    Dict,
     Hashable,
     Mapping,
 )
 
 class Config(Mapz):
-    def __init__(self, *mappings: Mapping[Hashable, Any], **kwargs: Dict):
+    def __init__(self, *mappings: Mapping[Hashable, Any], **kwargs: Any):
         super().__init__(*mappings)
 
         for k, v in kwargs.items():
@@ -16,7 +15,7 @@ class Config(Mapz):
                 k,
                 v,
                 key_prefix="",
-                key_sep="_",
+                key_sep="__",
             )
 
     def __repr__(self) -> str:
