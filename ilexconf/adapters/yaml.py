@@ -1,3 +1,5 @@
+from typing import Any, Hashable, Mapping
+from .common.address import AddressArg
 import sys
 import os
 from io import StringIO
@@ -65,11 +67,11 @@ if yaml:
         return dumped
 
     @reader(load=_load)
-    def from_yaml():
+    def from_yaml(source: AddressArg, ignore_errors: bool = False):
         """Read data from YAML string, file object or path"""
         pass  # pragma: no cover
 
     @writer(dump=_dump)
-    def to_yaml():
+    def to_yaml(mapping: Mapping[Hashable, Any], destination: AddressArg):
         """Write data to YAML file or convert to YAML string"""
         pass  # pragma: no cover

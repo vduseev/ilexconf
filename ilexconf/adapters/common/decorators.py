@@ -39,19 +39,28 @@ def reader(
 
     def decorator_reader(func):
         @wraps(func)
-        def wrapper_reader(data: AddressArg, **kwargs):
-            # Read data using proper loader
-            serialized = Address.read(data, str_resolver)
+        def wrapper_reader(source: AddressArg, **kwargs):
 
-            # Parse string data to dictionary using provided ``load``
-            # callable argument.
-            deserialized = load(serialized, **kwargs)
+            ignore_errors = kwargs.pop("ignore_errors", False)
+            try:
+                # Read data using proper loader
+                serialized = Address.read(source, str_resolver)
 
-            # Perform any pre processing necessary with the parsed
-            # dictionary
-            deserialized = pre_processing(deserialized)
+                # Parse string data to dictionary using provided ``load``
+                # callable argument.
+                deserialized = load(serialized, **kwargs)
 
-            return traverse(deserialized, mapping_type=Config)
+                # Perform any pre processing necessary with the parsed
+                # dictionary
+                deserialized = pre_processing(deserialized)
+
+                return traverse(deserialized, mapping_type=Config)
+
+            except Exception as e:
+                if ignore_errors:
+                    return Config()
+                else:
+                    raise e
 
         return wrapper_reader
 
@@ -69,19 +78,20 @@ def writer(dump: DumpCallable = _dummy_dump, **default_kwargs):
     def decorator_writer(func):
         @wraps(func)
         def wrapper_writer(
-            data: Mapping[Any, Any], destination: AddressArg = None, **kwargs
+            mapping: Mapping[Any, Any], destination: AddressArg = None, **kwargs
         ):
-            if isinstance(data, Config):
-                data = data.to_dict()
+
+            if isinstance(mapping, Config):
+                mapping = mapping.to_dict()
 
             # Merge kwargs passed as argument to adapter on top of
             # default kwargs
             merged_kwargs = default_kwargs.copy()
             merged_kwargs.update(kwargs)
 
-            # Convert mapping to string using provided ``dump`` callable
+            # Convert dict to string using provided ``dump`` callable
             # argument.
-            serialized = dump(data, **merged_kwargs)
+            serialized = dump(mapping, **merged_kwargs)
 
             # Save dumped string to destination.
             Address.write(serialized, destination, str_resolver=None)

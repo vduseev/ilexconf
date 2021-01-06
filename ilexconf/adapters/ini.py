@@ -1,5 +1,5 @@
 from configparser import ConfigParser
-from typing import Mapping, Any
+from typing import Hashable, Mapping, Any
 from io import StringIO
 
 from ilexconf.config import Config
@@ -48,7 +48,7 @@ def _dump(data: Mapping[str, Any]) -> str:
 
 
 @reader(load=_load, str_resolver=_str_resolver, pre_processing=_pre_process)
-def from_ini(source: AddressArg):
+def from_ini(source: AddressArg, ignore_errors: bool = False):
     """Read INI from string, file or path.
 
     INI adapter relies on Python's
@@ -89,7 +89,7 @@ def from_ini(source: AddressArg):
 
 
 @writer(dump=_dump)
-def to_ini():
+def to_ini(mapping: Mapping[Hashable, Any], destination: AddressArg):
     """Write data to INI file or convert to INI string
 
     INI adapter relies on Python's

@@ -3,7 +3,7 @@ from mapz import to_flat
 from argparse import Namespace
 
 
-def from_argparse(args):
+def from_argparse(args: Namespace):
 
     config = Config(vars(args))
     return config

@@ -1,5 +1,6 @@
+from .common.address import AddressArg
 from json import loads, dumps
-from typing import Mapping, Any
+from typing import Hashable, Mapping, Any
 
 from .common.decorators import reader, writer
 
@@ -18,7 +19,7 @@ def _dump(data: Mapping[Any, Any], **kwargs) -> str:
     load=_load,
     str_resolver=lambda string: "{" not in string or "}" not in string,
 )
-def from_json():
+def from_json(source: AddressArg, ignore_errors: bool = False):
     """Read JSON from string, file or path.
 
     JSON adapter relies on Python's
@@ -59,7 +60,7 @@ def from_json():
 
 
 @writer(dump=_dump, indent=2)
-def to_json():
+def to_json(mapping: Mapping[Hashable, Any], destination: AddressArg):
     """Write data to JSON file or convert to JSON string
 
     JSON adapter relies on Python's
