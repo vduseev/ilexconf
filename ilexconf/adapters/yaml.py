@@ -23,7 +23,6 @@ except ImportError:
 
         yaml_load = yaml.safe_load
     except ImportError:
-        print("AAAAA")
         yaml = None
 
 from .common.decorators import reader, writer
