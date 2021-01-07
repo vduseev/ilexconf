@@ -45,6 +45,7 @@ sphinx-material = "^0.0.32"
 sphinxcontrib-programoutput = "^0.16"
 radon = "^4.3.2"
 PyYAML = "^5.3.1"
+jedi = "0.17.2"
 
 [tool.poetry.scripts]
 ilexconf = "ilexconf.console:main"
